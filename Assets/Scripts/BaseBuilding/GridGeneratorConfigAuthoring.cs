@@ -6,6 +6,7 @@ using UnityEngine;
 public class GridGeneratorConfigAuthoring : MonoBehaviour
 {
     public GameObject cellPrefab;
+    public GameObject cellSelectorPrefab;
     public int gridSizeX;
     public int gridSizeZ;
     public HexOrientation hexOrientation;
@@ -19,6 +20,7 @@ public class GridGeneratorConfigAuthoring : MonoBehaviour
             AddComponent(entity, new GridGeneratorConfig
             {
                 cellPrefabEntity = GetEntity(authoring.cellPrefab, TransformUsageFlags.Dynamic),
+                cellSelectorPrefabEntity = GetEntity(authoring.cellSelectorPrefab, TransformUsageFlags.Dynamic),
                 gridSizeX = authoring.gridSizeX,
                 gridSizeZ = authoring.gridSizeZ,
                 hexOrientation = authoring.hexOrientation,
@@ -32,6 +34,7 @@ public struct GridGeneratorConfig : IComponentData
 {
 
     public Entity cellPrefabEntity;
+    public Entity cellSelectorPrefabEntity;
     public int gridSizeX;
     public int gridSizeZ;
     public HexOrientation hexOrientation;

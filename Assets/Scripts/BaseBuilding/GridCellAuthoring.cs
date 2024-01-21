@@ -11,6 +11,10 @@ public class GridCellAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new GridCell());
+            AddComponent(entity, new SelectableCellTag());
+            SetComponentEnabled<SelectableCellTag>(entity, true);
+            AddComponent(entity, new SelectedCellTag());
+            SetComponentEnabled<SelectedCellTag>(entity, false);
         }
     }
 }
