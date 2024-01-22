@@ -23,7 +23,6 @@ public partial struct CleanupSelectorSystem : ISystem
     {
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //EndSimulationEntityCommandBufferSystem.Singleton endSimEcb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
