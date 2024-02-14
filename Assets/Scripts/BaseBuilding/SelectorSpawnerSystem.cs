@@ -40,6 +40,7 @@ public partial struct SelectorSpawnerSystem : ISystem
         {
             UnityEngine.Debug.Log(gridGeneratorConfig.cellPrefabEntity);
             var selectionUI = ecb.Instantiate(gridGeneratorConfig.cellSelectorPrefabEntity);
+            ecb.AddComponent<Parent>(selectionUI);
             ecb.SetComponent(selectionUI, new LocalTransform
             {
                 Position = float3.zero,
@@ -52,7 +53,6 @@ public partial struct SelectorSpawnerSystem : ISystem
             };
             ecb.AddComponent<SelectorStateData>(selectedEntity);
             ecb.SetComponent(selectedEntity, newSelectionStateData);
-            ecb.AddComponent<Parent>(selectionUI);
             ecb.SetComponent(selectionUI, new Parent { Value = selectedEntity });
 
 

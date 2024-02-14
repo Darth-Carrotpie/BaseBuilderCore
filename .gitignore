@@ -20,7 +20,7 @@
 # Data and NN Models
 /[Aa]ssets/[Pp]ackages/*
 /[Aa]ssets/[Dd]ata/*
-/[Aa]ssets/[Mm]odels/*
+#/[Aa]ssets/[Mm]odels/*
 /[Aa]ssets/[Mm]odelData/*
 /[Aa]ssets/[Mm]ownloads/*
 /[Aa]ssets/[Ss]treamingAssets/*
