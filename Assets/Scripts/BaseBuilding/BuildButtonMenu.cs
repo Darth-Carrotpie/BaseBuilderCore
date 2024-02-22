@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using Unity.Entities;
 using Unity.Scenes;
 using UnityEngine;
@@ -37,10 +38,17 @@ public class BuildButtonMenu : MonoBehaviour
     void NewBuildOrder(BuildingClass newOrderClass)
     {
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
+        BuildOrder orderData = entityManager.GetComponentData<BuildOrder>(orderEntity);
 
-        BuildOrder newOrder = new BuildOrder { Value = newOrderClass };
+        BuildOrder newOrder = new BuildOrder { classValue = newOrderClass,
+            cellPrefabEntityClear = orderData.cellPrefabEntityClear,
+            cellPrefabEntityArena = orderData.cellPrefabEntityArena,
+            cellPrefabEntityBarracks = orderData.cellPrefabEntityBarracks,
+            cellPrefabEntityKitchen = orderData.cellPrefabEntityKitchen,
+            cellPrefabEntityWorkshop = orderData.cellPrefabEntityWorkshop,
+        };
 
-        entityManager.SetComponentData<BuildOrder>(orderEntity, newOrder);
+        entityManager.AddComponentData<BuildOrder>(orderEntity, newOrder);
         //entityManager.GetComponentData<BuildOrder>(orderEntity).Value = BuildingClass.Kitchen;
     }
 }

@@ -31,7 +31,7 @@ public partial struct CleanupSelectorSystem : ISystem
         {
             foreach ((RefRO<SelectorStateData> selectionStateData, Entity selectedEntity) in SystemAPI.Query<RefRO<SelectorStateData>>().WithAll<SelectableCellTag>().WithDisabled<SelectedCellTag>().WithEntityAccess())
             {
-                UnityEngine.Debug.Log("destroy Entity:" + selectionStateData.ValueRO.SelectionUI);
+                //UnityEngine.Debug.Log("destroy Entity:" + selectionStateData.ValueRO.SelectionUI);
                 ecb.DestroyEntity(selectionStateData.ValueRO.SelectionUI);
                 ecb.RemoveComponent<SelectorStateData>(selectedEntity);
             }

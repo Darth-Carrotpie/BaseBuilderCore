@@ -38,7 +38,7 @@ public partial struct SelectorSpawnerSystem : ISystem
 
         foreach ((RefRW<SelectableCellTag> cell, Entity selectedEntity) in SystemAPI.Query<RefRW<SelectableCellTag>>().WithAll<SelectedCellTag>().WithNone<SelectorStateData>().WithEntityAccess())
         {
-            UnityEngine.Debug.Log(gridGeneratorConfig.cellPrefabEntity);
+            //UnityEngine.Debug.Log(gridGeneratorConfig.cellPrefabEntity);
             var selectionUI = ecb.Instantiate(gridGeneratorConfig.cellSelectorPrefabEntity);
             ecb.AddComponent<Parent>(selectionUI);
             ecb.SetComponent(selectionUI, new LocalTransform

@@ -483,6 +483,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 786c7afb0e644e04a8c6b425a6b73211, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cellPrefabEntityClear: {fileID: 3180639956912412510, guid: 8b27fff58016cf64d94bf85d84520716,
+    type: 3}
+  cellPrefabEntityWorkshop: {fileID: 855610564341950886, guid: fda515936058d704ea34b8a8363fa527,
+    type: 3}
+  cellPrefabEntityKitchen: {fileID: 6997654082710666474, guid: 2a2811a60bcbeda4d99b98e38d37d4b4,
+    type: 3}
+  cellPrefabEntityBarracks: {fileID: 114440521064080104, guid: ff9e883f68a7e06449318ea274dc4213,
+    type: 3}
+  cellPrefabEntityArena: {fileID: 787396374568492256, guid: a657f2f8505575748a7ec24cd315c9bb,
+    type: 3}
 --- !u!4 &1327633226
 Transform:
   m_ObjectHideFlags: 0

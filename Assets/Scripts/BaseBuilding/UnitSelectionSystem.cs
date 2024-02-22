@@ -38,7 +38,7 @@ public partial class UnitSelectionSystem : SystemBase
             return;
         if (UnityEngine.Input.GetMouseButtonUp(0))
         {
-            UnityEngine.Debug.Log("button clicked");
+            //UnityEngine.Debug.Log("button clicked");
             if (!UnityEngine.Input.GetKey(UnityEngine.KeyCode.LeftShift))
             {
                 DeselectAllUnits();
@@ -49,7 +49,7 @@ public partial class UnitSelectionSystem : SystemBase
     }
     void SelectSingleUnit()
     {
-        UnityEngine.Debug.Log("SelectSingleUnit");
+        //UnityEngine.Debug.Log("SelectSingleUnit");
 
         var ray = _mainCamera.ScreenPointToRay(UnityEngine.Input.mousePosition);
         var rayStart = ray.origin;
