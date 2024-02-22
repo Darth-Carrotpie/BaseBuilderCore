@@ -97,7 +97,7 @@ public partial class UnitSelectionSystem : SystemBase
 
     void DeselectAllUnits()
     {
-        UnityEngine.Debug.Log("Deselect");
+        //UnityEngine.Debug.Log("Deselect");
         foreach ((RefRO<SelectorStateData> selectionStateData, Entity selectedEntity) in SystemAPI.Query<RefRO<SelectorStateData>>().WithAll<SelectedCellTag>().WithEntityAccess())
         {
             EntityManager.SetComponentEnabled<SelectedCellTag>(selectedEntity, false);

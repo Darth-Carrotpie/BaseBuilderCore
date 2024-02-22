@@ -4,6 +4,9 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine.UIElements;
+using static Unity.Physics.CompoundCollider;
+using static UnityEditor.FilePathAttribute;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -14,7 +17,7 @@ public struct SelectorStateData : IComponentData
 }
 [UpdateAfter(typeof(UnitSelectionSystem))]
 [UpdateAfter(typeof(GenerateGridSystem))]
-
+//[UpdateBefore(typeof(TransformSystemGroup))]
 [BurstCompile]
 public partial struct SelectorSpawnerSystem : ISystem
 {
@@ -31,8 +34,8 @@ public partial struct SelectorSpawnerSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        EndSimulationEntityCommandBufferSystem.Singleton endSimEcb;
-        endSimEcb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        //EndSimulationEntityCommandBufferSystem.Singleton endSimEcb  = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        BeginSimulationEntityCommandBufferSystem.Singleton endSimEcb  = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = endSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         GridGeneratorConfig gridGeneratorConfig = SystemAPI.GetSingleton<GridGeneratorConfig>(); //for some reason i need to get it every frame
 
@@ -54,7 +57,11 @@ public partial struct SelectorSpawnerSystem : ISystem
             ecb.AddComponent<SelectorStateData>(selectedEntity);
             ecb.SetComponent(selectedEntity, newSelectionStateData);
             ecb.SetComponent(selectionUI, new Parent { Value = selectedEntity });
-
+            //ecb.SetComponent(selectionUI, World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<LocalToWorld>(selectedEntity));
+            /*ecb.AddComponent(selectionUI, new LocalToWorld
+            {
+                Value = new float4x4(quaternion.identity, float3.zero)
+            });*/
 
             //ecb.SetName(selectionUI, "Selector_of_"+selectedEntity);
         }

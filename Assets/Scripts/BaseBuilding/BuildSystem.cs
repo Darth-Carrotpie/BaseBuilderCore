@@ -7,7 +7,7 @@ using Unity.Transforms;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
-//[BurstCompile]
+[BurstCompile]
 public partial struct BuildSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -23,8 +23,8 @@ public partial struct BuildSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        EndSimulationEntityCommandBufferSystem.Singleton endSimEcb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = endSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
+        BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
+        var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         RefRW < BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
         if (order.ValueRW.classValue == BuildingClass.None) return;
 
