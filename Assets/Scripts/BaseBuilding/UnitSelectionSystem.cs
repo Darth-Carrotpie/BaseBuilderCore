@@ -20,11 +20,13 @@ public partial class UnitSelectionSystem : SystemBase
     {
         _mainCamera = UnityEngine.Camera.main;
         RequireForUpdate<PhysicsWorldSingleton>();
+        RequireForUpdate<BlockClickThrough>();
+        RequireForUpdate<GridGeneratorConfig>();
     }
 
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<GridGeneratorConfig>();
+        //state.RequireForUpdate<GridGeneratorConfig>();
 
     }
     public void OnStartRunning(ref SystemState state)

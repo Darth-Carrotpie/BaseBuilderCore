@@ -12,8 +12,7 @@ public partial struct BuildSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        //state.RequireForUpdate<GridGeneratorConfig>();
-
+        state.RequireForUpdate<BuildOrder>();
     }
     public void OnStartRunning(ref SystemState state)
     {
