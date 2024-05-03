@@ -156,8 +156,8 @@ MonoBehaviour:
     type: 3}
   cellSelectorPrefab: {fileID: 7174593611041714018, guid: 7a49e4dfca3d35a46a876dd48e7be31a,
     type: 3}
-  gridSizeX: 20
-  gridSizeZ: 20
+  gridSizeX: 25
+  gridSizeZ: 25
   hexOrientation: 1
   hexRadius: 1.1
 --- !u!4 &685796766
@@ -508,6 +508,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1567676276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1567676278}
+  - component: {fileID: 1567676277}
+  m_Layer: 0
+  m_Name: GraphConfig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1567676277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567676276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93dce9abcb82bec45801c98a68396383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkPrefab: {fileID: 7055688589137269619, guid: b8b62cba7370ea74a8c4ec0b833c8e5d,
+    type: 3}
+  linkWidth: 1
+--- !u!4 &1567676278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567676276}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -515,3 +562,4 @@ SceneRoots:
   - {fileID: 1063624279}
   - {fileID: 1327633226}
   - {fileID: 685796766}
+  - {fileID: 1567676278}
