@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Physics.Extensions;
+using Unity.Physics;
+using Unity.Mathematics;
 
 public class ForceNodeAuthoring : MonoBehaviour
 {
@@ -16,8 +18,11 @@ public class ForceNodeAuthoring : MonoBehaviour
             {
                 //cellUI = GetEntity(authoring.unbuiltPrefab, TransformUsageFlags.Dynamic),
             });
+            //AddComponent(entity, new PhysicsVelocity { });
+            //AddComponent(entity, new PhysicsMass { InverseMass = 1f, InverseInertia = float3.zero });
+
         }
-    }
+    } 
 }
 public struct ForceNode : IComponentData
 {
