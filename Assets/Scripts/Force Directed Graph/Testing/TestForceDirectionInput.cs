@@ -7,9 +7,6 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class TestForceDirectionInput : MonoBehaviour
 {
-    EntityManager entityManager;
-    Entity testConfigEntity;
-
     void Start()
     {
     }
@@ -17,11 +14,14 @@ public class TestForceDirectionInput : MonoBehaviour
     [EditorCools.Button]
     public void GenerateSpawnAmountForceNodes()
     {
-        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager; //have to get EntityManager every time we need to ref it.
-        testConfigEntity = entityManager.CreateEntityQuery(typeof(TestForceDirection)).GetSingletonEntity();
-
-        TestForceDirection componentData = entityManager.GetComponentData<TestForceDirection>(testConfigEntity);
-        componentData.generateNodes = true;
-        entityManager.SetComponentData(testConfigEntity, componentData);
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager; //have to get EntityManager every time we need to ref it.
+        Entity testForceDirEntity = entityManager.CreateEntityQuery(typeof(TestForceDirection)).GetSingletonEntity();
+        Entity testConfigEntity = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig)).GetSingletonEntity();
+        TestForceDirection testForceDirData = entityManager.GetComponentData<TestForceDirection>(testForceDirEntity);
+        ForceDirGraphConfig configData = entityManager.GetComponentData<ForceDirGraphConfig>(testConfigEntity);
+        testForceDirData.generateNodes = true;
+        configData.temperature = configData.initialTemperature;
+        entityManager.SetComponentData(testForceDirEntity, testForceDirData);
+        entityManager.SetComponentData(testConfigEntity, configData);
     }
 }

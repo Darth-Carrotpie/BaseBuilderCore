@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestForceDirectionAuthoring : MonoBehaviour
 {
     public int spawnAmount = 1;
+    public int linkAmount = 2;
     public GameObject linkEntityPrefab;
     public GameObject nodeEntityPrefab;
 
@@ -17,6 +18,7 @@ public class TestForceDirectionAuthoring : MonoBehaviour
             AddComponent(entity, new TestForceDirection
             {
                 spawnAmount = authoring.spawnAmount,
+                linkAmount = authoring.linkAmount,
                 linkEntityPrefab = GetEntity(authoring.linkEntityPrefab, TransformUsageFlags.Dynamic),
                 nodeEntityPrefab = GetEntity(authoring.nodeEntityPrefab, TransformUsageFlags.Dynamic),
                 generateNodes = false
@@ -29,6 +31,7 @@ public struct TestForceDirection : IComponentData
 {
     public int spawnAmount;
     public Entity linkEntityPrefab;
-    public Entity nodeEntityPrefab;
+    public Entity nodeEntityPrefab; 
     public bool generateNodes;
+    public int linkAmount;
 }

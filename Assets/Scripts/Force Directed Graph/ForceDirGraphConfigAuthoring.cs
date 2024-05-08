@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class ForceDirGraphConfigAuthoring : MonoBehaviour
 {
-    public float pullStrength = 1f;
-    public float pushStrength = 1f;
-    public float friction = 0.05f;
-    public float offsetDistance = 2f;
+    //public float pullStrength = 1f;
+    //public float pushStrength = 1f;
+    //public float offsetDistance = 2f;
+
+    public float repulsiveForce = 1000f;
+    public float springConstant = 0.1f;
+    public float coolingFactor = 0.9f;
+    public float initialTemperature = 10f;
+    public float temperature = 10f;
 
     private class Baker : Baker<ForceDirGraphConfigAuthoring>
     {
@@ -17,10 +22,14 @@ public class ForceDirGraphConfigAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new ForceDirGraphConfig
             {
-                pullStrength = authoring.pullStrength,
+                /*pullStrength = authoring.pullStrength,
                 pushStrength = authoring.pushStrength,
-                friction = authoring.friction,
-                offsetDistance = authoring.offsetDistance,
+                offsetDistance = authoring.offsetDistance,*/
+                repulsiveForce = authoring.repulsiveForce,
+                springConstant = authoring.springConstant,
+                coolingFactor = authoring.coolingFactor,
+                initialTemperature = authoring.initialTemperature,
+                temperature = authoring.temperature,
             });
             AddComponent(entity, new LinkOrder { startLinking = false });
         }
@@ -30,8 +39,12 @@ public class ForceDirGraphConfigAuthoring : MonoBehaviour
 
 public struct ForceDirGraphConfig : IComponentData
 {
-    public float pullStrength;
+    /*public float pullStrength;
     public float pushStrength;
-    public float friction;
-    public float offsetDistance;
+    public float offsetDistance;*/
+    public float repulsiveForce;
+    public float springConstant;
+    public float coolingFactor;
+    public float initialTemperature;
+    public float temperature;
 }
