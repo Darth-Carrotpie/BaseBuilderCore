@@ -1,29 +1,26 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public partial class ForceNodesGizmoSystem : SystemBase
 {
     EntityManager entityManager;
-
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+        GizmoManager.OnDrawGizmos(DrawGizmos);
+    }
     protected override void OnStartRunning()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        GizmoManager.OnDrawGizmos(DrawGizmos);
     }
-
-
-    /*public void OnUpdate(ref SystemState state)
+    protected override void OnDestroy()
     {
-        if (UnityEngine.Input.GetKey(KeyCode.Space))
-        {
-            foreach ((RefRO<LocalTransform> nodeTransform, ForceNode node) in SystemAPI.Query<RefRO<LocalTransform>, ForceNode>())
-            {
-                Gizmos.DrawSphere(nodeTransform.ValueRO.Position, 0.5f);
-            }
-        }
-    }*/
+        GizmoManager.OnStopDrawGizmos(DrawGizmos);
+    }
     private void DrawGizmos()
     {
         // Local reference to EntityManager
@@ -71,6 +68,6 @@ public partial class ForceNodesGizmoSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        // Intentionally empty.
+        // Intentionally empty. Method must exist.
     }
 }

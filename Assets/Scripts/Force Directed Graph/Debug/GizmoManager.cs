@@ -6,6 +6,11 @@ using UnityEngine;
 #if UNITY_EDITOR
 public static class GizmoManager
 {
+    public static void OnStopDrawGizmos(Action action)
+    {
+        Handler.DrawGizmos -= action;
+    }
+
     public static void OnDrawGizmos(Action action)
     {
         Handler.DrawGizmos += action;

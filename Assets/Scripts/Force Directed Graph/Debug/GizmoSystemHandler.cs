@@ -12,7 +12,7 @@ public class GizmoSystemHandler : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (EditorApplication.isPlaying)
+        if (Application.isPlaying)
         {
             DrawGizmos?.Invoke();
         }
@@ -20,7 +20,7 @@ public class GizmoSystemHandler : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (EditorApplication.isPlaying)
+        if (Application.isPlaying)
         {
             DrawGizmosSelected?.Invoke();
         }
