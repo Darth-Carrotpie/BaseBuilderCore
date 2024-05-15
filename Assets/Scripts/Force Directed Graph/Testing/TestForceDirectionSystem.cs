@@ -64,7 +64,7 @@ public partial struct TestForceDirectionSystem : ISystem
         ecb.AddComponent<Parent>(newNode);
         ecb.SetComponent(newNode, new Parent { Value = configEntity });
         ecb.SetComponent(newNode, new LocalTransform
-        { 
+        {
             Position = new float3(UnityEngine.Random.Range(-10f, 5f), 0, UnityEngine.Random.Range(-5f, 10f)),
             Rotation = quaternion.identity,
             Scale = 1f

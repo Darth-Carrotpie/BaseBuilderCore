@@ -22,10 +22,12 @@ public partial struct BuildSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        state.Enabled = false;
+
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         RefRW < BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
-        if (order.ValueRW.classValue == BuildingClass.None) return;
+        if (order.ValueRW.classValue == BuildingType.None) return;
 
         foreach ((RefRW<SelectableCellTag> cell, RefRW<GridCell> gridCell, Entity selectedEntity) in SystemAPI.Query<RefRW<SelectableCellTag>, RefRW<GridCell>>().WithAll<SelectedCellTag>().WithEntityAccess())
         {
@@ -51,18 +53,18 @@ public partial struct BuildSystem : ISystem
 
             //ecb.SetName(selectionUI, "Selector_of_"+selectedEntity);
         }
-        order.ValueRW.classValue = BuildingClass.None;
+        order.ValueRW.classValue = BuildingType.None;
     }
     public Entity GetOderPrefab(BuildOrder order)
     {
         Entity output = Entity.Null;
         switch (order.classValue)
         {
-            case BuildingClass.Clear: output = order.cellPrefabEntityClear; break;
-            case BuildingClass.Workshop: output = order.cellPrefabEntityWorkshop; break;
-            case BuildingClass.Kitchen: output = order.cellPrefabEntityKitchen; break;
-            case BuildingClass.Barracks: output = order.cellPrefabEntityBarracks; break;
-            case BuildingClass.Arena: output = order.cellPrefabEntityArena; break;
+            case BuildingType.Clear: output = order.cellPrefabEntityClear; break;
+            case BuildingType.Workshop: output = order.cellPrefabEntityWorkshop; break;
+            case BuildingType.Kitchen: output = order.cellPrefabEntityKitchen; break;
+            case BuildingType.Barracks: output = order.cellPrefabEntityBarracks; break;
+            case BuildingType.Arena: output = order.cellPrefabEntityArena; break;
         }
         return output;
     }

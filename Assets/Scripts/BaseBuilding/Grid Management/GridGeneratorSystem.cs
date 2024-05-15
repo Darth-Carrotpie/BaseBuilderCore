@@ -5,27 +5,33 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using static UnityEditor.PlayerSettings;
+using Unity.Collections;
+using static Unity.Physics.CompoundCollider;
+using static UnityEditor.FilePathAttribute;
+using UnityEngine.UIElements;
 
 public partial class GenerateGridSystem : SystemBase
 {
+    //GridGeneratorConfig config;
+    //EntityManager entityManager;
+
     protected override void OnCreate()
     {
         RequireForUpdate<GridGeneratorConfig>();
     }
     protected override void OnUpdate()
     {
+        //entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        GridGeneratorConfig config = SystemAPI.GetSingleton<GridGeneratorConfig>();
+
+        GenerateGrid(config);
+
         this.Enabled = false;
-
-        GridGeneratorConfig gridGeneratorConfig = SystemAPI.GetSingleton<GridGeneratorConfig>();
-
-        GenerateGrid(gridGeneratorConfig);
-
     }
 
     public void GenerateGrid(GridGeneratorConfig config)
     {
         float3 pos = float3.zero;
-        Entity tile;
 
         switch (config.hexOrientation)
         {
@@ -38,9 +44,8 @@ public partial class GenerateGridSystem : SystemBase
                         pos.x = config.hexRadius * 3.0f / 2.0f * (q - config.gridSizeX/2f);
                         pos.z = config.hexRadius * Mathf.Sqrt(3.0f) * ((r + q / 2.0f) - config.gridSizeZ/2f);
 
-                        tile = CreateCellEntity(config, pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
-                        //tile.index = new CubeIndex(q, r, -q - r);
-                        //grid.Add(tile.index.ToString(), tile);
+                        CreateCellEntity(config, pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
+                        //SetEntityParent(tile);
                     }
                 }
                 break;
@@ -54,34 +59,60 @@ public partial class GenerateGridSystem : SystemBase
                         pos.x = config.hexRadius * Mathf.Sqrt(3.0f) * ((q + r / 2.0f) - config.gridSizeX / 2f);
                         pos.z = config.hexRadius * 3.0f / 2.0f * (r - config.gridSizeZ / 2f);
 
-                        tile = CreateCellEntity(config, pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
-                        //tile.index = new CubeIndex(q, r, -q - r);
-                        //grid.Add(tile.index.ToString(), tile);
+                        CreateCellEntity(config, pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
+                        //SetEntityParent(tile);
+
                     }
                 }
                 break;
         }
     }
 
-    public Entity CreateCellEntity(GridGeneratorConfig config, float3 position, string newName)
+    public void CreateCellEntity(GridGeneratorConfig config, float3 position, string newName)
     {
-        Entity entity = EntityManager.Instantiate(config.cellPrefabEntity);
-        //here Bake runs only once for the prefab when it itself is instantiated, but not every time when that prefab's new instance is spawned
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity newEntity = entityManager.Instantiate(config.cellPrefabEntity); //here Bake runs only once for the prefab when it itself is instantiated, but not every time when that prefab's new instance is spawned
+
+        //this does not work:
+        //get the entity of config to parent the cells to
+        //EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(GridGeneratorConfig));
+        //Entity configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];
+        //Entity configEntity = entityQuery.GetSingletonEntity();
+        //entityManager.AddComponent<Parent>(newEntity);
+        //entityManager.SetComponentData(newEntity, new Parent { Value = configEntity });
+
+        //string childName = entityManager.GetName(newEntity);
+        //string parentName = entityManager.GetName(configEntity);
+        //Debug.Log("child: " + childName + "     parentName: " + parentName);
+
         Quaternion rot = Quaternion.identity;
         if(config.hexOrientation == HexOrientation.Flat)
         {
             rot = Quaternion.Euler(new Vector3(0f, 30f, 0f));
         }
-        EntityManager.SetComponentData(entity, new LocalTransform
+
+        entityManager.SetComponentData(newEntity, new LocalTransform
         {
             Position = position,
             Rotation = rot,
             Scale = 1f
         });
-        EntityManager.SetName(entity, newName);
-        return entity;
-    }
 
+        entityManager.SetName(newEntity, newName);
+    }
+    /*public void SetEntityParent(Entity child)
+    {
+        //get the entity of config to parent the cells to
+        var entityQuery = entityManager.CreateEntityQuery(typeof(GridGeneratorConfig));
+        //EntityQuery entityQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<GridGeneratorConfig>());
+        Entity configEntity = entityQuery.GetSingletonEntity();
+        //set it up for the newly created Entity
+        //entityManager.AddComponent<Parent>(entity);
+        entityManager.AddComponentData(child, new Parent { Value = configEntity });
+        string childName = entityManager.GetName(child);
+        string parentName = entityManager.GetName(configEntity);
+        Debug.Log("child: " + childName + "     parentName: " + parentName);
+    }*/
     [System.Serializable]
     public struct CubeIndex
     {

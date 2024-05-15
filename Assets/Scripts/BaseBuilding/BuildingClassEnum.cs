@@ -1,4 +1,4 @@
-public enum BuildingClass
+public enum BuildingType
 {
     None,
     Clear,

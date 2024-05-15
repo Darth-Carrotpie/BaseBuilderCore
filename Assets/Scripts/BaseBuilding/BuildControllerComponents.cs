@@ -5,7 +5,7 @@ using UnityEngine;
 
 public struct BuildOrder : IComponentData
 {
-    public BuildingClass classValue;
+    public BuildingType classValue;
     public Entity cellPrefabEntityClear;
     public Entity cellPrefabEntityWorkshop;
     public Entity cellPrefabEntityKitchen;

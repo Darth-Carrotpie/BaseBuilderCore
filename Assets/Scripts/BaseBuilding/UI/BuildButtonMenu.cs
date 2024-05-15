@@ -16,26 +16,26 @@ public class BuildButtonMenu : MonoBehaviour
 
     public void BuildClearButton()
     {
-        NewBuildOrder(BuildingClass.Clear);
+        NewBuildOrder(BuildingType.Clear);
     }
     public void BuildWorkshopButton()
     {
-        NewBuildOrder(BuildingClass.Workshop);
+        NewBuildOrder(BuildingType.Workshop);
     }
     public void BuildKitchenButton()
     {
-        NewBuildOrder(BuildingClass.Kitchen);
+        NewBuildOrder(BuildingType.Kitchen);
     }
     public void BuildBarracksButton()
     {
-        NewBuildOrder(BuildingClass.Barracks);
+        NewBuildOrder(BuildingType.Barracks);
     }
     public void BuildArenaButton()
     {
-        NewBuildOrder(BuildingClass.Arena);
+        NewBuildOrder(BuildingType.Arena);
     }
 
-    void NewBuildOrder(BuildingClass newOrderClass)
+    void NewBuildOrder(BuildingType newOrderClass)
     {
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
         BuildOrder orderData = entityManager.GetComponentData<BuildOrder>(orderEntity);

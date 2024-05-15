@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/BuildSample-Insert.unity
+    path: Assets/Scenes/BuildSample-ForceDirected.unity
     guid: cb330c64f7464584c8b659500ea8bf78
   m_configObjects: {}

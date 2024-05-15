@@ -31,7 +31,6 @@ public class ForceDirGraphConfigAuthoring : MonoBehaviour
                 initialTemperature = authoring.initialTemperature,
                 temperature = authoring.temperature,
             });
-            AddComponent(entity, new LinkOrder { startLinking = false });
         }
     }
 }
