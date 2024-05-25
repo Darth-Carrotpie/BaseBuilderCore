@@ -1,14 +1,15 @@
 using System;
 using System.Diagnostics;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
-[BurstCompile]
-public partial struct AutoParentingSystem : ISystem
+//[BurstCompile]
+public partial struct AutoParentBuildingsSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
@@ -22,29 +23,19 @@ public partial struct AutoParentingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        //state.Enabled = false;
+
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach ((RefRW<Building> gridCell, Entity entity) in SystemAPI.Query<RefRW<Building>>().WithAbsent<Parent>().WithEntityAccess())
+        var query = SystemAPI.QueryBuilder().WithAll<BuildingsParent>().Build();
+        if (query.IsEmpty) return;
+        Entity parentEntity = query.GetSingletonEntity();
+
+        foreach ((RefRW<Building> building, Entity entity) in SystemAPI.Query<RefRW<Building>>().WithAbsent<Parent>().WithAbsent<ExcludeFromAutoParenting>().WithEntityAccess())
         {
             ecb.AddComponent<Parent>(entity);
-            Entity parentEntity = CreateParentEntityIfNotExists<BuildingsParent>(ecb, state);
             ecb.SetComponent(entity, new Parent { Value = parentEntity });
         }
-    }
-
-    Entity CreateParentEntityIfNotExists<T>(EntityCommandBuffer ecb, SystemState state) where T : struct, IComponentData
-        //To Do:
-        // : struct, IComponentData should have solved the error, but hasn't.
-    {
-        var singletonQuery = state.GetEntityQuery(ComponentType.ReadOnly<T>());
-        if (singletonQuery.IsEmpty)
-        {
-            Entity newParentEntity = ecb.CreateEntity();
-            ecb.AddComponent<BuildingsParent>(newParentEntity); //should be type T, but gives non-nullable error
-            ecb.SetName(newParentEntity, typeof(T).Name);
-            return newParentEntity;
-        }
-        return singletonQuery.GetSingletonEntity();
     }
 }

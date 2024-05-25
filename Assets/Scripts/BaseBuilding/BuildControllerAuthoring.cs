@@ -24,6 +24,7 @@ public class BuildControllerAuthoring : MonoBehaviour
                 cellPrefabEntityArena = GetEntity(authoring.cellPrefabEntityArena, TransformUsageFlags.Dynamic),
             });
             AddComponent(entity, new BlockClickThrough());
+            AddComponent(entity, new ExcludeFromAutoParenting());
         }
     }
 }
