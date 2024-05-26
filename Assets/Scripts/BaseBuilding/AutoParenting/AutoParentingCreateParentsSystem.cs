@@ -10,7 +10,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
 [BurstCompile]
-public partial struct AutoParentingCreateParents : ISystem
+public partial struct AutoParentingCreateParentsSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
@@ -30,8 +30,9 @@ public partial struct AutoParentingCreateParents : ISystem
 
         CreateParentBuildings<BuildingsParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
         CreateParentHexCell<HexCellParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
-
-    }
+        CreateParentNodes<NodesParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
+        CreateParentLinks<LinksParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
+}
 
     /*Entity CreateParentEntityIfNotExists<T>(EntityCommandBuffer ecb, SystemState state) where T : struct, IComponentData
         //To Do:
@@ -68,6 +69,32 @@ public partial struct AutoParentingCreateParents : ISystem
         {
             Entity newParentEntity = ecb.CreateEntity();
             ecb.AddComponent<HexCellParent>(newParentEntity);
+            ecb.SetName(newParentEntity, typeof(T).Name);
+            UnityEngine.Debug.Log("parent created: HexCells!");
+            ecb.AddComponent<LocalToWorld>(newParentEntity);
+        }
+    }
+    void CreateParentNodes<T>(EntityCommandBuffer ecb, SystemState state)
+    {
+        var query = SystemAPI.QueryBuilder().WithAll<NodesParent>().Build();
+
+        if (query.IsEmpty)
+        {
+            Entity newParentEntity = ecb.CreateEntity();
+            ecb.AddComponent<NodesParent>(newParentEntity);
+            ecb.SetName(newParentEntity, typeof(T).Name);
+            UnityEngine.Debug.Log("parent created: HexCells!");
+            ecb.AddComponent<LocalToWorld>(newParentEntity);
+        }
+    }
+    void CreateParentLinks<T>(EntityCommandBuffer ecb, SystemState state)
+    {
+        var query = SystemAPI.QueryBuilder().WithAll<LinksParent>().Build();
+
+        if (query.IsEmpty)
+        {
+            Entity newParentEntity = ecb.CreateEntity();
+            ecb.AddComponent<LinksParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
             UnityEngine.Debug.Log("parent created: HexCells!");
             ecb.AddComponent<LocalToWorld>(newParentEntity);

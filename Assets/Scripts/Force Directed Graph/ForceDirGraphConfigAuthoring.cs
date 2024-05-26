@@ -14,6 +14,8 @@ public class ForceDirGraphConfigAuthoring : MonoBehaviour
     public float coolingFactor = 0.9f;
     public float initialTemperature = 10f;
     public float temperature = 10f;
+    public GameObject linkEntityPrefab;
+    public GameObject nodeEntityPrefab;
 
     private class Baker : Baker<ForceDirGraphConfigAuthoring>
     {
@@ -30,6 +32,8 @@ public class ForceDirGraphConfigAuthoring : MonoBehaviour
                 coolingFactor = authoring.coolingFactor,
                 initialTemperature = authoring.initialTemperature,
                 temperature = authoring.temperature,
+                linkEntityPrefab = GetEntity(authoring.linkEntityPrefab, TransformUsageFlags.Dynamic),
+                nodeEntityPrefab = GetEntity(authoring.nodeEntityPrefab, TransformUsageFlags.Dynamic),
             });
         }
     }
@@ -46,4 +50,6 @@ public struct ForceDirGraphConfig : IComponentData
     public float coolingFactor;
     public float initialTemperature;
     public float temperature;
+    public Entity linkEntityPrefab;
+    public Entity nodeEntityPrefab;
 }

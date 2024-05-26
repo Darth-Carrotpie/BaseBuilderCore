@@ -50,6 +50,10 @@ MonoBehaviour:
   coolingFactor: 0.99
   initialTemperature: 1
   temperature: 1
+  linkEntityPrefab: {fileID: 4114545562215108539, guid: 8eb678b0db0840b4aaae1dec1b58d3a9,
+    type: 3}
+  nodeEntityPrefab: {fileID: 2579524575506749101, guid: a6bf1ff406fe9f54e883987ce8a10700,
+    type: 3}
 --- !u!114 &4572229028196722321
 MonoBehaviour:
   m_ObjectHideFlags: 0

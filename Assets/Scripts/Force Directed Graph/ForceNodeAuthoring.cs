@@ -24,7 +24,3 @@ public class ForceNodeAuthoring : MonoBehaviour
         }
     } 
 }
-public struct ForceNode : IComponentData
-{
-
-}

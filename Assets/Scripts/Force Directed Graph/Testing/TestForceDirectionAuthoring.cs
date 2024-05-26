@@ -7,8 +7,6 @@ public class TestForceDirectionAuthoring : MonoBehaviour
 {
     public int spawnAmount = 1;
     public int linkAmount = 2;
-    public GameObject linkEntityPrefab;
-    public GameObject nodeEntityPrefab;
 
     private class Baker : Baker<TestForceDirectionAuthoring>
     {
@@ -19,8 +17,6 @@ public class TestForceDirectionAuthoring : MonoBehaviour
             {
                 spawnAmount = authoring.spawnAmount,
                 linkAmount = authoring.linkAmount,
-                linkEntityPrefab = GetEntity(authoring.linkEntityPrefab, TransformUsageFlags.Dynamic),
-                nodeEntityPrefab = GetEntity(authoring.nodeEntityPrefab, TransformUsageFlags.Dynamic),
                 generateNodes = false
             }) ;
         }
@@ -30,8 +26,6 @@ public class TestForceDirectionAuthoring : MonoBehaviour
 public struct TestForceDirection : IComponentData
 {
     public int spawnAmount;
-    public Entity linkEntityPrefab;
-    public Entity nodeEntityPrefab; 
     public bool generateNodes;
     public int linkAmount;
 }

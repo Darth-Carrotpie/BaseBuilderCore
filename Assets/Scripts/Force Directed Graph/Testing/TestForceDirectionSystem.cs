@@ -19,6 +19,8 @@ public partial struct TestForceDirectionSystem : ISystem
     RefRW<TestForceDirection> testConfig;
     EntityCommandBuffer ecb;
     Entity configEntity;
+    ForceDirGraphConfig config;
+
     public void OnCreate(ref SystemState state)
     {
         //state.RequireForUpdate<LinkOrder>();
@@ -36,6 +38,7 @@ public partial struct TestForceDirectionSystem : ISystem
         // First we get a reference to the Entity of config Singleton
         testConfig = SystemAPI.GetSingletonRW<TestForceDirection>();
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        config = SystemAPI.GetSingleton<ForceDirGraphConfig>();
 
         if (testConfig.ValueRW.generateNodes)
         {
@@ -57,10 +60,10 @@ public partial struct TestForceDirectionSystem : ISystem
 
     public void CreateNodeWithRandomLinks(int linksAmount)
     {
-        var entityQuery = entityManager.CreateEntityQuery(typeof(TestForceDirection));
-        configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0]; 
+        var entityQuery = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig));
+        configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];
 
-        var newNode = ecb.Instantiate(testConfig.ValueRW.nodeEntityPrefab);
+        var newNode = ecb.Instantiate(config.nodeEntityPrefab);
         ecb.AddComponent<Parent>(newNode);
         ecb.SetComponent(newNode, new Parent { Value = configEntity });
         ecb.SetComponent(newNode, new LocalTransform
@@ -81,7 +84,7 @@ public partial struct TestForceDirectionSystem : ISystem
     {
         Entity randNode = GetRandomNodeSystem();
         if (randNode == newNode) return;
-        var newLink = ecb.Instantiate(testConfig.ValueRW.linkEntityPrefab);
+        var newLink = ecb.Instantiate(config.linkEntityPrefab);
         ecb.AddComponent<Parent>(newLink);
         ecb.SetComponent(newLink, new Parent { Value = configEntity });
         ecb.SetComponent(newLink, new ForceLink

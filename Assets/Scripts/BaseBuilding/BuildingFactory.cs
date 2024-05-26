@@ -36,5 +36,8 @@ public partial struct BuildFactory : ISystem
 
         order.ValueRW.classValue = BuildingType.None;
         UnityEngine.Debug.Log("building created");
+
+        //add LocalToWorld to be able to parent later
+        ecb.AddComponent<LocalToWorld>(newBuilding);
     }
 }
