@@ -15,7 +15,3 @@ public class BuildingAuthoring : MonoBehaviour
         }
     }
 }
-public struct Building : IComponentData
-{
-    public BuildingType buildingType;
-}

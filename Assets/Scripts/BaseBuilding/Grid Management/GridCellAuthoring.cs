@@ -29,11 +29,13 @@ public class GridCellAuthoring : MonoBehaviour
             SetComponentEnabled<IsBarracksTag>(entity, false);
             AddComponent(entity, new IsArenaTag());
             SetComponentEnabled<IsArenaTag>(entity, false);
+            AddBuffer<NeighbourBuilding>(entity);
         }
     }
 }
 public struct GridCell : IComponentData {
     public Entity cellUI;
+    public Entity building;
 }
 
 public struct IsClearTag : IComponentData, IEnableableComponent{
