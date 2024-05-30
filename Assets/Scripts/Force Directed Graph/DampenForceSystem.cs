@@ -29,6 +29,9 @@ public partial struct DampenForceSystem : ISystem
             physicsVelocity.ValueRW.Linear = physicsVelocity.ValueRW.Linear  * graphConfig.ValueRW.temperature;
             entityManager.SetComponentData(nodeEntity, physicsVelocity.ValueRW);
         }
-        graphConfig.ValueRW.temperature *= graphConfig.ValueRW.coolingFactor;
+        if (graphConfig.ValueRW.temperature > 0.000001f)
+            graphConfig.ValueRW.temperature *= graphConfig.ValueRW.coolingFactor;
+        else
+            graphConfig.ValueRW.temperature = 0;
     }
 } 

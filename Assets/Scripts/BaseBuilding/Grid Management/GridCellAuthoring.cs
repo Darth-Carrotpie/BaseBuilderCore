@@ -29,7 +29,7 @@ public class GridCellAuthoring : MonoBehaviour
             SetComponentEnabled<IsBarracksTag>(entity, false);
             AddComponent(entity, new IsArenaTag());
             SetComponentEnabled<IsArenaTag>(entity, false);
-            AddBuffer<NeighbourBuilding>(entity);
+            AddBuffer<GridCellArea>(entity);
         }
     }
 }

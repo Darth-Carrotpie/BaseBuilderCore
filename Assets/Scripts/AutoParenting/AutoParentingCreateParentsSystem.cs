@@ -4,6 +4,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEditor.Search;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -81,10 +82,24 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
         if (query.IsEmpty)
         {
             Entity newParentEntity = ecb.CreateEntity();
+            ecb.AddComponent<LocalTransform>(newParentEntity); //without this children positions wont update
+            ecb.SetComponent<LocalTransform>(newParentEntity, new LocalTransform
+            {
+                Scale = 1,
+                Position = float3.zero,
+                Rotation = quaternion.identity
+            });
+            ecb.AddComponent<LocalToWorld>(newParentEntity);
             ecb.AddComponent<NodesParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: HexCells!");
-            ecb.AddComponent<LocalToWorld>(newParentEntity);
+            UnityEngine.Debug.Log("parent created: ForceNodes!");
+            /*ecb.AddComponent<PhysicsStep>(newParentEntity);
+            ecb.SetComponent<PhysicsStep>(newParentEntity, new PhysicsStep
+            {
+                SimulationType = SimulationType.UnityPhysics,
+                SolverIterationCount = 4,
+                MultiThreaded = 1,
+            });*/
         }
     }
     void CreateParentLinks<T>(EntityCommandBuffer ecb, SystemState state)
@@ -96,7 +111,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
             Entity newParentEntity = ecb.CreateEntity();
             ecb.AddComponent<LinksParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: HexCells!");
+            UnityEngine.Debug.Log("parent created: ForceLinks!");
             ecb.AddComponent<LocalToWorld>(newParentEntity);
         }
     }

@@ -109,8 +109,8 @@ public partial struct ForceNodeCreateSystem : ISystem
         var config = SystemAPI.GetSingleton<ForceDirGraphConfig>();
 
         var newNode = ecb.Instantiate(config.nodeEntityPrefab);
-        ecb.AddComponent<Parent>(newNode);
-        ecb.SetComponent(newNode, new Parent { Value = configEntity });
+        //ecb.AddComponent<Parent>(newNode);
+        //ecb.SetComponent(newNode, new Parent { Value = configEntity });
         ecb.SetComponent(newNode, new LocalTransform
         {
             Position = new float3(UnityEngine.Random.Range(-3f, 3f), 0, UnityEngine.Random.Range(-3f, 3f)),

@@ -18,9 +18,9 @@ public class ForceNodeAuthoring : MonoBehaviour
             {
                 //cellUI = GetEntity(authoring.unbuiltPrefab, TransformUsageFlags.Dynamic),
             });
+            AddBuffer<GridCellArea>(entity);
             //AddComponent(entity, new PhysicsVelocity { });
             //AddComponent(entity, new PhysicsMass { InverseMass = 1f, InverseInertia = float3.zero });
-
         }
     } 
 }
