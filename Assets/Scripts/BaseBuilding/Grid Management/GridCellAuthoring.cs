@@ -19,7 +19,7 @@ public class GridCellAuthoring : MonoBehaviour
             SetComponentEnabled<SelectableCellTag>(entity, true);
             AddComponent(entity, new SelectedCellTag());
             SetComponentEnabled<SelectedCellTag>(entity, false);
-            AddComponent(entity, new IsClearTag());
+            /*AddComponent(entity, new IsClearTag());
             SetComponentEnabled<IsClearTag>(entity, true);
             AddComponent(entity, new IsWorkshopTag());
             SetComponentEnabled<IsWorkshopTag>(entity, false);
@@ -28,28 +28,28 @@ public class GridCellAuthoring : MonoBehaviour
             AddComponent(entity, new IsBarracksTag());
             SetComponentEnabled<IsBarracksTag>(entity, false);
             AddComponent(entity, new IsArenaTag());
-            SetComponentEnabled<IsArenaTag>(entity, false);
+            SetComponentEnabled<IsArenaTag>(entity, false);*/
             AddBuffer<GridCellArea>(entity);
+
+            int clearState = 254;
+            AddComponent(entity, new GridCellVisualState());
+            SetComponent(entity, new GridCellVisualState { Value = (byte)clearState });
+            AddComponent(entity, new GridCellVisualStatePrevious { Value = (byte)clearState });
+
+            AddComponent(entity, new ClearGridCellVisualState()); 
+            //SetComponentEnabled<ClearGridCellVisualState>(entity, false) ;
+            AddComponent(entity, new ArenaGridCellVisualState());
+            //SetComponentEnabled<ArenaGridCellVisualState>(entity, false);
+            AddComponent(entity, new WorkshopGridCellVisualState());
+            //SetComponentEnabled<WorkshopGridCellVisualState>(entity, false);
+            AddComponent(entity, new KitchenGridCellVisualState());
+            //SetComponentEnabled<KitchenGridCellVisualState>(entity, false);
+            AddComponent(entity, new BarracksGridCellVisualState());
+            //SetComponentEnabled<BarracksGridCellVisualState>(entity, false); 
         }
     }
 }
 public struct GridCell : IComponentData {
     public Entity cellUI;
     public Entity building;
-}
-
-public struct IsClearTag : IComponentData, IEnableableComponent{
-    public Entity cellUI;
-}
-public struct IsWorkshopTag : IComponentData, IEnableableComponent{
-    public Entity cellUI;
-}
-public struct IsKitchenTag : IComponentData, IEnableableComponent{
-    public Entity cellUI;
-}
-public struct IsBarracksTag : IComponentData, IEnableableComponent{
-    public Entity cellUI;
-}
-public struct IsArenaTag : IComponentData, IEnableableComponent{
-    public Entity cellUI;
 }

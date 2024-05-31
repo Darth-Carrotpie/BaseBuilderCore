@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Scenes;
 using UnityEngine;
@@ -39,6 +40,15 @@ public class BuildButtonMenu : MonoBehaviour
     {
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
         BuildOrder orderData = entityManager.GetComponentData<BuildOrder>(orderEntity);
+        //check if order already exists
+        if (orderData.classValue != BuildingType.None) return;
+        //check if nothing is selected
+        NativeArray<Entity> entityArray = entityManager.CreateEntityQuery(typeof(SelectedCellTag)).ToEntityArray(Allocator.TempJob);
+        if (entityArray.Length == 0)
+        {
+            UnityEngine.Debug.Log("Nothing Selected! No build order issued!");
+            return;
+        }
 
         BuildOrder newOrder = new BuildOrder { classValue = newOrderClass,
             cellPrefabEntityClear = orderData.cellPrefabEntityClear,

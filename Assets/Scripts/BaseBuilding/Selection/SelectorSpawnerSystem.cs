@@ -38,25 +38,28 @@ public partial struct SelectorSpawnerSystem : ISystem
         BeginSimulationEntityCommandBufferSystem.Singleton endSimEcb  = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = endSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         GridGeneratorConfig gridGeneratorConfig = SystemAPI.GetSingleton<GridGeneratorConfig>(); //for some reason i need to get it every frame
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         foreach ((RefRW<SelectableCellTag> cell, Entity selectedEntity) in SystemAPI.Query<RefRW<SelectableCellTag>>().WithAll<SelectedCellTag>().WithNone<SelectorStateData>().WithEntityAccess())
         {
-            //UnityEngine.Debug.Log(gridGeneratorConfig.cellPrefabEntity);
+            //UnityEngine.Debug.Log(gridGeneratorConfig.cellPrefabEntity); 
             var selectionUI = ecb.Instantiate(gridGeneratorConfig.cellSelectorPrefabEntity);
             ecb.AddComponent<Parent>(selectionUI);
-            ecb.SetComponent(selectionUI, new LocalTransform
-            {
-                Position = float3.zero,
-                Rotation = quaternion.identity,
-                Scale = 1f
-            });
+            ecb.SetComponent(selectionUI, new Parent { Value = selectedEntity });
+
             var newSelectionStateData = new SelectorStateData()
             {
                 SelectionUI = selectionUI
             };
             ecb.AddComponent<SelectorStateData>(selectedEntity);
             ecb.SetComponent(selectedEntity, newSelectionStateData);
-            ecb.SetComponent(selectionUI, new Parent { Value = selectedEntity });
+            ecb.SetComponent(selectionUI, new LocalTransform
+            {
+                Position = float3.zero,
+                Rotation = quaternion.identity,
+                Scale = 1f
+            });
+            UnityEngine.Debug.Log("selector visual entity spawned: "+ entityManager.GetName(selectedEntity));
             //ecb.SetComponent(selectionUI, World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<LocalToWorld>(selectedEntity));
             /*ecb.AddComponent(selectionUI, new LocalToWorld
             {

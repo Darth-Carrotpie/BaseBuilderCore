@@ -56,10 +56,10 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
         if (query.IsEmpty)
         {
             Entity newParentEntity = ecb.CreateEntity();
+            AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<BuildingsParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
             UnityEngine.Debug.Log("parent created: Buildings!");
-            ecb.AddComponent<LocalToWorld>(newParentEntity);
         }
     }
     void CreateParentHexCell<T>(EntityCommandBuffer ecb, SystemState state)
@@ -69,10 +69,10 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
         if (query.IsEmpty)
         {
             Entity newParentEntity = ecb.CreateEntity();
+            AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<HexCellParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
             UnityEngine.Debug.Log("parent created: HexCells!");
-            ecb.AddComponent<LocalToWorld>(newParentEntity);
         }
     }
     void CreateParentNodes<T>(EntityCommandBuffer ecb, SystemState state)
@@ -82,14 +82,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
         if (query.IsEmpty)
         {
             Entity newParentEntity = ecb.CreateEntity();
-            ecb.AddComponent<LocalTransform>(newParentEntity); //without this children positions wont update
-            ecb.SetComponent<LocalTransform>(newParentEntity, new LocalTransform
-            {
-                Scale = 1,
-                Position = float3.zero,
-                Rotation = quaternion.identity
-            });
-            ecb.AddComponent<LocalToWorld>(newParentEntity);
+            AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<NodesParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
             UnityEngine.Debug.Log("parent created: ForceNodes!");
@@ -109,10 +102,23 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
         if (query.IsEmpty)
         {
             Entity newParentEntity = ecb.CreateEntity();
+            AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<LinksParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
             UnityEngine.Debug.Log("parent created: ForceLinks!");
-            ecb.AddComponent<LocalToWorld>(newParentEntity);
         }
+    }
+
+    void AddDefaultsToParent(EntityCommandBuffer ecb, Entity newParentEntity)
+    {
+        ecb.AddComponent<LocalTransform>(newParentEntity); //without this children positions wont update
+        //scale is 0 by default, so have to set it to 1, for proper position updates:
+        ecb.SetComponent<LocalTransform>(newParentEntity, new LocalTransform
+        {
+            Scale = 1,
+            Position = float3.zero,
+            Rotation = quaternion.identity
+        });
+        ecb.AddComponent<LocalToWorld>(newParentEntity);
     }
 }

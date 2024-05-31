@@ -7,21 +7,17 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-public partial struct MatchBuildingToCellSystem : ISystem
+public partial struct ForceNodeBufferGridCellSystem : ISystem
 {
     private PositionBuilder positionBuilderCells;
-    //private PositionBuilder positionBuilderNodes;
     private SpatialMap<SpatialPosition> spatialMap;
     EntityQuery gridCellQuery;
-    //EntityQuery nodeQuery;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GridGeneratorConfig>();
 
         this.gridCellQuery = SystemAPI.QueryBuilder().WithAll<GridCell>().WithAll<LocalTransform>().Build();
-        //this.nodeQuery = SystemAPI.QueryBuilder().WithAll<ForceNode>().WithAll<LocalTransform>().Build();
         this.positionBuilderCells = new PositionBuilder(ref state, gridCellQuery);
-        //this.positionBuilderNodes = new PositionBuilder(ref state, nodeQuery);
 
         const int size = 4096;
         const int quantizeStep = 16;
@@ -40,39 +36,20 @@ public partial struct MatchBuildingToCellSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         this.gridCellQuery = SystemAPI.QueryBuilder().WithAll<GridCell>().WithAll<LocalTransform>().Build();
-        //this.nodeQuery = SystemAPI.QueryBuilder().WithAll<ForceNode>().WithAll<LocalTransform>().Build();
 
         state.Dependency = this.positionBuilderCells.Gather(ref state, state.Dependency, out NativeArray<SpatialPosition> cellsPositions);
         state.Dependency = this.spatialMap.Build(cellsPositions, state.Dependency);
-        //state.Dependency = this.positionBuilderNodes.Gather(ref state, state.Dependency, out NativeArray<SpatialPosition> nodesPositions);
-        //state.Dependency = this.spatialMap.Build(nodesPositions, state.Dependency); //do not add these, because they will then be probably itterated through the SpacialHashMap
 
         GridGeneratorConfig config = SystemAPI.GetSingleton<GridGeneratorConfig>();
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        /*
-        //query force nodes
-        foreach (var (node, nodeLocalToWorld, nodeEntity) in SystemAPI.Query<ForceNode, LocalToWorld>().WithEntityAccess()){
-            //query hex cells
-            foreach (var (hexCell, cellLocalToWorld, cellEntity) in SystemAPI.Query<RefRW<GridCell>, LocalToWorld>().WithEntityAccess()){
-                //if there is a force node within range of hex cell apply building type
-                float distance = math.length(nodeLocalToWorld.Position - cellLocalToWorld.Position);
-                if(distance < config.hexRadius){
-                    hexCell.ValueRW.building = node.buildingRepr;
-                }
-            }
-        }
-        //then clear the ones which did not hacve an in-range
-        */
-
         // The entities in this will match the indices from the spatial map
         var cellEntities = this.gridCellQuery.ToEntityListAsync(state.WorldUpdateAllocator, state.Dependency, out var cellDependency);
-        //var nodeEntities = this.nodeQuery.ToEntityListAsync(state.WorldUpdateAllocator, state.Dependency, out var nodeDependency);
         state.Dependency = cellDependency;
-        //state.Dependency = nodeDependency;
 
         new FindNeighbourJob
         {
+            Radius = config.hexRadius,
             CellEntities = cellEntities.AsDeferredJobArray(),
             CellsPositions = cellsPositions,
             SpatialMap = this.spatialMap.AsReadOnly(),
@@ -83,7 +60,7 @@ public partial struct MatchBuildingToCellSystem : ISystem
     [BurstCompile]
     private partial struct FindNeighbourJob : IJobEntity
     {
-        private const float Radius = 1.2f;
+        public float Radius;
 
         [ReadOnly]
         public NativeArray<Entity> CellEntities;
@@ -123,7 +100,7 @@ public partial struct MatchBuildingToCellSystem : ISystem
 
                     do
                     { 
-                        //"entity" here is constant, it will always be a node 
+                        //"entity" here is constant in while loop, it will always be a node 
                         //then that means the index which is being operated has to be CellGrid, because
                         //there will be a lot more CellGrid objects than ForceNodes
                         var otherEntity = this.CellEntities[item];
@@ -133,7 +110,7 @@ public partial struct MatchBuildingToCellSystem : ISystem
                         {
                             continue;
                         }
-                        // Don't add a Node
+                        // Don't add a Node by accident
                         if (entityManager.HasComponent<ForceNode>(otherEntity)) 
                         {
                             continue;
