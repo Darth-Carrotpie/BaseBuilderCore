@@ -39,8 +39,33 @@ public partial struct ForceNodeCreateSystem : ISystem
     {
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
-        // First we get a reference to the Entity of config Singleton
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+        Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
+        DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<BuildOrderAtPosition>(orderEntity);
+
+        if (buildOrdersAtPos.Length <= 0) return;
+
+        //create the building entity for each order: 
+        for (int i = buildOrdersAtPos.Length - 1; i >= 0; i--)
+        {
+            BuildOrderAtPosition bo = buildOrdersAtPos[i];
+            if (bo.buildingProduced == Entity.Null) return;
+            if (bo.forceNodeProduced != Entity.Null) return;
+            Entity newNode = CreateForceNodeAtPosition(bo.buildingProduced, bo.position);
+
+            //swap the order with new node
+            BuildOrderAtPosition newBo = new BuildOrderAtPosition
+            {
+                buildOrder = bo.buildOrder,
+                buildingProduced = bo.buildingProduced,
+                forceNodeProduced = newNode,
+                position = bo.position,
+            };
+            buildOrdersAtPos.RemoveAt(i);
+            buildOrdersAtPos.Add(newBo);
+        }
+        /*
         //first build a query with all building and make a NativeArray
         var buildingsQuery = SystemAPI.QueryBuilder().WithAll<Building>().WithNone<ExcludeFromAutoParenting>().Build();
         int bCount = buildingsQuery.CalculateEntityCount();
@@ -51,7 +76,7 @@ public partial struct ForceNodeCreateSystem : ISystem
         int nCount = nodesQuery.CalculateEntityCount();
         NativeArray<Entity> buildingReprArray = new NativeArray<Entity>(nCount, Allocator.TempJob);
 
-        var extractJob = new ExtractBuildingReprJob
+        var extractJob = new ExtractBuildingReprJob 
         {
             ForceNodes = SystemAPI.GetComponentLookup<ForceNode>(true),
             Entities = nodesQuery.ToEntityArray(Allocator.TempJob),
@@ -93,7 +118,7 @@ public partial struct ForceNodeCreateSystem : ISystem
         buildingReprArray.Dispose();
         extractJob.Entities.Dispose();
         diffArray.Dispose();
-
+        */
         //only reset this to zeroes when we add new nodes to iteration. Then we reset temperature and initial velocities.
         foreach (var (physicsVelocity, node) in SystemAPI.Query<RefRW<PhysicsVelocity>, ForceNode>())
         {
@@ -119,7 +144,25 @@ public partial struct ForceNodeCreateSystem : ISystem
         });
         ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
     }
+    public Entity CreateForceNodeAtPosition(Entity buildingEntity, float3 position)
+    {
+        var entityQuery = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig));
+        configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];
 
+        var config = SystemAPI.GetSingleton<ForceDirGraphConfig>();
+
+        var newNode = ecb.Instantiate(config.nodeEntityPrefab);
+        //ecb.AddComponent<Parent>(newNode);
+        //ecb.SetComponent(newNode, new Parent { Value = configEntity });
+        ecb.SetComponent(newNode, new LocalTransform
+        {
+            Position = new float3(position.x, 0, position.z),
+            Rotation = quaternion.identity,
+            Scale = 1f
+        });
+        ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
+        return newNode;
+    }
     /*public void CreateNodeWithRandomLinks(int linksAmount)
     {
         var entityQuery = entityManager.CreateEntityQuery(typeof(TestForceDirection));

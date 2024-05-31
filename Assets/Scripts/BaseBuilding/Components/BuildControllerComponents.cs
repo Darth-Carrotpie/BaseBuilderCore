@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct BuildOrder : IComponentData
@@ -17,4 +18,12 @@ public struct BuildOrder : IComponentData
 public struct BlockClickThrough : IComponentData
 {
     public bool Value;
+}
+
+public struct BuildOrderAtPosition : IBufferElementData
+{
+    public BuildOrder buildOrder;
+    public float3 position;
+    public Entity buildingProduced;
+    public Entity forceNodeProduced;
 }

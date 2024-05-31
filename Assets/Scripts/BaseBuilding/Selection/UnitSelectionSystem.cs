@@ -56,7 +56,7 @@ public partial class UnitSelectionSystem : SystemBase
         var rayStart = ray.origin;
         var rayEnd = ray.GetPoint(Camera.main.farClipPlane);
         Entity hitEntity = Raycast(rayStart, rayEnd);
-        UnityEngine.Debug.Log(hitEntity);
+        UnityEngine.Debug.Log("Unit Selected: "+EntityManager.GetName(hitEntity));
         if (hitEntity != null)
         {
             if (EntityManager.HasComponent<SelectableCellTag>(hitEntity))

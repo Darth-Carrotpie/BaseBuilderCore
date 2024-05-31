@@ -62,7 +62,8 @@ public partial struct BuildSystem : ISystem
 
             //ecb.SetName(selectionUI, "Selector_of_"+selectedEntity);
         }
-        order.ValueRW.classValue = BuildingType.None;
+        //this is not an order consumer, no need for this anymore:
+        //order.ValueRW.classValue = BuildingType.None;
     }
     public Entity GetOderPrefab(BuildOrder order)
     {

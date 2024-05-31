@@ -25,6 +25,7 @@ public class BuildControllerAuthoring : MonoBehaviour
             });
             AddComponent(entity, new BlockClickThrough());
             AddComponent(entity, new ExcludeFromAutoParenting());
+            AddBuffer<BuildOrderAtPosition>(entity);
         }
     }
 }
