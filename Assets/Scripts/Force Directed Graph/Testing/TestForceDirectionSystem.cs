@@ -55,6 +55,7 @@ public partial struct TestForceDirectionSystem : ISystem
             {
                 physicsVelocity.ValueRW.Linear = new float3(0, 0, 0);
             }
+            ecb.Playback(state.EntityManager);
         }
     }
 

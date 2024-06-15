@@ -38,7 +38,10 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
             if (buildOrdersAtPos[i].buildingProduced != Entity.Null && 
                 buildOrdersAtPos[i].forceNodeProduced != Entity.Null)
             {
-                buildOrdersAtPos.RemoveAt(i);
+                var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                UnityEngine.Debug.Log("Consumer buildingProduced: " + bp+ "  forceNodeProduced:" + fp);
+                buildOrdersAtPos.RemoveAt(i); 
             }
         }
 

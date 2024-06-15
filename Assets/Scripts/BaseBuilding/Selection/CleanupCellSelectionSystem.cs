@@ -35,7 +35,6 @@ public partial struct CleanupSelectorSystem : ISystem
                 ecb.DestroyEntity(selectionStateData.ValueRO.SelectionUI);
                 ecb.RemoveComponent<SelectorStateData>(selectedEntity);
             }
-            ecb.Playback(state.EntityManager);
         }
     }
 }

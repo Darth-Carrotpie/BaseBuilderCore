@@ -4,6 +4,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -24,11 +25,10 @@ public partial struct BuildFactory : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
-        var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
-        //RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
-        Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
-        DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<BuildOrderAtPosition>(orderEntity);
+        var ecbSystem = state.World.GetOrCreateSystemManaged<BeginSimulationEntityCommandBufferSystem>();
+        EntityCommandBuffer ecb = ecbSystem.CreateCommandBuffer();
+        Entity orderEntity = SystemAPI.GetSingletonEntity<BuildOrder>();
+        DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = SystemAPI.GetBuffer<BuildOrderAtPosition>(orderEntity);
 
         if (buildOrdersAtPos.Length <= 0) return;
 
@@ -36,31 +36,31 @@ public partial struct BuildFactory : ISystem
         for(int i = buildOrdersAtPos.Length-1; i >=0; i--) { 
             BuildOrderAtPosition bo = buildOrdersAtPos[i];
             if (bo.buildingProduced != Entity.Null) return;
-            Entity newBuilding = ecb.CreateEntity();
+            //fill in the order with new building 
+            //Problem: this is not working. Building not being set!
+            //Cause: the ecb is somehow deffering the instantiation of the building, after its playback the refs are lost.
+            //solution: use entityManager.CreateEntity() instead of ecb.CreateEntity();
+            Entity newBuildingEntity = entityManager.CreateEntity();
 
-            ecb.AddComponent(newBuilding, new Building { buildingType = bo.buildOrder.classValue });
+            ecb.AddComponent(newBuildingEntity, new Building { buildingType = bo.buildOrder.classValue });
             string bName = bo.buildOrder.classValue.ToString();
-            ecb.SetName(newBuilding, "New_" + bName);
+            ecb.SetName(newBuildingEntity, "New_" + bName);
 
-            //bo.buildOrder.classValue = BuildingType.None;
             UnityEngine.Debug.Log("building created: " + bName);
 
             //add LocalToWorld to be able to parent later
-            ecb.AddComponent<LocalToWorld>(newBuilding);
+            ecb.AddComponent<LocalToWorld>(newBuildingEntity);
 
-            //fill in the order with new building 
-            //Problem: this is not working. Building not being set!
-            ///bo.buildingProduced = newBuilding;
-            ///a fix:
-            BuildOrderAtPosition newBo = new BuildOrderAtPosition
-            {
-                buildOrder = bo.buildOrder,
-                buildingProduced = newBuilding,
-                forceNodeProduced = bo.forceNodeProduced,
-                position = bo.position,
-            };
-            buildOrdersAtPos.RemoveAt(i);
-            buildOrdersAtPos.Add(newBo);
+            var newBo = bo;
+            newBo.buildingProduced = newBuildingEntity;
+
+            buildOrdersAtPos[i] = newBo;
         }
+        for (int i = buildOrdersAtPos.Length - 1; i >= 0; i--)
+        {
+            UnityEngine.Debug.Log("buildOrdersAtPos["+i+"]: " + buildOrdersAtPos[i].buildingProduced);
+        }
+
+        ecbSystem.AddJobHandleForProducer(state.Dependency);
     }
 }

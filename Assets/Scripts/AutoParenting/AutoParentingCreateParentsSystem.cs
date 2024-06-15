@@ -27,13 +27,15 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
     {
         bool parentCheck = false;
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
-        EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
-
+        //EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
         CreateParentBuildings<BuildingsParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
         CreateParentHexCell<HexCellParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
         CreateParentNodes<NodesParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
         CreateParentLinks<LinksParent>(ecb, state); // to do: change to generic CreateParentEntityIfNotExists<T>, example attempt that couldnt make it work is in AutoParentBuildingsSystem
-}
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
 
     /*Entity CreateParentEntityIfNotExists<T>(EntityCommandBuffer ecb, SystemState state) where T : struct, IComponentData
         //To Do:

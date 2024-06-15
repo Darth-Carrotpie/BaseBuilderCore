@@ -1,3 +1,4 @@
+using BovineLabs.Core;
 using System;
 using System.Diagnostics;
 using System.Net.Security;
@@ -19,7 +20,7 @@ public partial struct ForceNodeCreateSystem : ISystem
 {
     EntityManager entityManager;
     RefRW<TestForceDirection> testConfig;
-    EntityCommandBuffer ecb;
+    //EntityCommandBuffer ecb;
     Entity configEntity;
     public void OnCreate(ref SystemState state)
     {
@@ -37,8 +38,8 @@ public partial struct ForceNodeCreateSystem : ISystem
         //Then create a node for each of those buildings
     public void OnUpdate(ref SystemState state)
     {
-        BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
+        //BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        //ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
@@ -52,10 +53,12 @@ public partial struct ForceNodeCreateSystem : ISystem
             BuildOrderAtPosition bo = buildOrdersAtPos[i];
             if (bo.buildingProduced == Entity.Null) return;
             if (bo.forceNodeProduced != Entity.Null) return;
-            Entity newNode = CreateForceNodeAtPosition(bo.buildingProduced, bo.position);
+            //var nm = entityManager.GetName(bo.buildingProduced);
+            //UnityEngine.Debug.Log("CreateForceNodeAtPosition buildingRepr: "+ nm);
+            Entity newNode = CreateForceNodeAtPosition(bo.buildingProduced, bo.position, ref state);
 
             //swap the order with new node
-            BuildOrderAtPosition newBo = new BuildOrderAtPosition
+            BuildOrderAtPosition newBo = new BuildOrderAtPosition 
             {
                 buildOrder = bo.buildOrder,
                 buildingProduced = bo.buildingProduced,
@@ -65,60 +68,7 @@ public partial struct ForceNodeCreateSystem : ISystem
             buildOrdersAtPos.RemoveAt(i);
             buildOrdersAtPos.Add(newBo);
         }
-        /*
-        //first build a query with all building and make a NativeArray
-        var buildingsQuery = SystemAPI.QueryBuilder().WithAll<Building>().WithNone<ExcludeFromAutoParenting>().Build();
-        int bCount = buildingsQuery.CalculateEntityCount();
-        NativeArray<Entity> buildingArray = buildingsQuery.ToEntityArray(Allocator.TempJob);
 
-        //then query all nodes and put their building refs into an array
-        var nodesQuery = SystemAPI.QueryBuilder().WithAll<ForceNode>().WithNone<ExcludeFromAutoParenting>().Build();
-        int nCount = nodesQuery.CalculateEntityCount();
-        NativeArray<Entity> buildingReprArray = new NativeArray<Entity>(nCount, Allocator.TempJob);
-
-        var extractJob = new ExtractBuildingReprJob 
-        {
-            ForceNodes = SystemAPI.GetComponentLookup<ForceNode>(true),
-            Entities = nodesQuery.ToEntityArray(Allocator.TempJob),
-            BuildingReprArray = buildingReprArray
-        };
-
-        // Schedule the job and complete it
-        JobHandle nHandle = extractJob.Schedule(nCount, 64);
-        nHandle.Complete();
-
-        // Find the difference between buildingArray and buildingReprArray
-        NativeList<Entity> diffArray = new NativeList<Entity>(Allocator.TempJob);
-
-        for (int i = 0; i < buildingArray.Length; i++)
-        {
-            bool found = false;
-            for (int j = 0; j < buildingReprArray.Length; j++)
-            {
-                if (buildingArray[i] == buildingReprArray[j])
-                {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-            {
-                diffArray.Add(buildingArray[i]);
-            }
-        }
-        //query buildings with links
-
-        //create ForceNodes
-        foreach(Entity buildingEnt in diffArray)
-        {
-            CreateForceNode(buildingEnt);
-        }
-
-        buildingArray.Dispose();
-        buildingReprArray.Dispose();
-        extractJob.Entities.Dispose();
-        diffArray.Dispose();
-        */
         //only reset this to zeroes when we add new nodes to iteration. Then we reset temperature and initial velocities.
         foreach (var (physicsVelocity, node) in SystemAPI.Query<RefRW<PhysicsVelocity>, ForceNode>())
         {
@@ -126,7 +76,7 @@ public partial struct ForceNodeCreateSystem : ISystem
         }
     }
 
-    public void CreateForceNode(Entity buildingEntity)
+    /*public void CreateForceNode(Entity buildingEntity)
     {
         var entityQuery = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig));
         configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];
@@ -142,18 +92,21 @@ public partial struct ForceNodeCreateSystem : ISystem
             Rotation = quaternion.identity,
             Scale = 1f
         });
-        ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
-    }
-    public Entity CreateForceNodeAtPosition(Entity buildingEntity, float3 position)
+        ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity }); 
+    }*/
+    public Entity CreateForceNodeAtPosition(Entity buildingEntity, float3 position, ref SystemState state)
     {
-        var entityQuery = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig));
+        BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
+        //EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+        EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(ForceDirGraphConfig));
         configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];
 
-        var config = SystemAPI.GetSingleton<ForceDirGraphConfig>();
+        ForceDirGraphConfig config = SystemAPI.GetSingleton<ForceDirGraphConfig>();
 
-        var newNode = ecb.Instantiate(config.nodeEntityPrefab);
+        Entity newNode = entityManager.Instantiate(config.nodeEntityPrefab);
         //ecb.AddComponent<Parent>(newNode);
-        //ecb.SetComponent(newNode, new Parent { Value = configEntity });
+        //ecb.SetComponent(newNode, new Parent { Value = configEntity });  
         ecb.SetComponent(newNode, new LocalTransform
         {
             Position = new float3(position.x, 0, position.z),
@@ -161,9 +114,12 @@ public partial struct ForceNodeCreateSystem : ISystem
             Scale = 1f
         });
         ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
+        ecb.SetName(newNode, "ForceNode_x:" + position.x+"_z:"+position.z);
+        //ecb.Playback(state.EntityManager);
+        //ecb.Dispose();
         return newNode;
     }
-    /*public void CreateNodeWithRandomLinks(int linksAmount)
+    /*public void CreateNodeWithRandomLinks(int linksAmount) 
     {
         var entityQuery = entityManager.CreateEntityQuery(typeof(TestForceDirection));
         configEntity = entityQuery.ToEntityArray(Allocator.TempJob)[0];

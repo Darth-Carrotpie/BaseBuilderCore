@@ -68,5 +68,6 @@ public partial struct SelectorSpawnerSystem : ISystem
 
             //ecb.SetName(selectionUI, "Selector_of_"+selectedEntity);
         }
+        //ecb.Playback(state.EntityManager); the WorldUnmanaged ECB will automatically Playback at the end of Update cycle
     }
 }

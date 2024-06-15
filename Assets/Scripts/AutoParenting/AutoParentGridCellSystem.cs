@@ -28,28 +28,19 @@ public partial struct AutoParentGridCellSystem : ISystem
         bool parentCheck = false;
         EndSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
-        //using (var ecb = new EntityCommandBuffer(Allocator.TempJob))
-        //{
+        var singletonQuery = SystemAPI.QueryBuilder().WithAll<HexCellParent>().Build();
+        if (singletonQuery.IsEmpty) return;
+        Entity parentEntity = singletonQuery.GetSingletonEntity();
 
-            //var singletonQuery = state.GetEntityQuery(ComponentType.ReadOnly<HexCellParent>());
-
-            var singletonQuery = SystemAPI.QueryBuilder().WithAll<HexCellParent>().Build();
-            if (singletonQuery.IsEmpty) return;
-            Entity parentEntity = singletonQuery.GetSingletonEntity();
-
-            foreach ((RefRW<GridCell> gridCell, Entity entity) in SystemAPI.Query<RefRW<GridCell>>().WithNone<Parent>().WithNone<PreviousParent>().WithNone<ExcludeFromAutoParenting>().WithEntityAccess())
-            {
-                ecb.AddComponent<Parent>(entity);
-                ecb.SetComponent(entity, new Parent { Value = parentEntity });
-                parentCheck = true;
-            }
-            if (parentCheck)
-            {
-                //state.Enabled = false;
-                UnityEngine.Debug.Log("parented HexCells");
-            }
-
-            //ecb.Playback(state.EntityManager);
-        //}
+        foreach ((RefRW<GridCell> gridCell, Entity entity) in SystemAPI.Query<RefRW<GridCell>>().WithNone<Parent>().WithNone<PreviousParent>().WithNone<ExcludeFromAutoParenting>().WithEntityAccess())
+        {
+            ecb.AddComponent<Parent>(entity);
+            ecb.SetComponent(entity, new Parent { Value = parentEntity });
+            parentCheck = true;
+        }
+        if (parentCheck)
+        {
+            UnityEngine.Debug.Log("parented HexCells");
+        }
     }
 }

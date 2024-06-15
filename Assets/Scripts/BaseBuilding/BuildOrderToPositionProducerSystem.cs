@@ -42,6 +42,8 @@ public partial struct BuildOrderToPositionProducerSystem : ISystem, ISystemStart
             {
                 buildOrder = order.ValueRW,
                 position = localTransform.Position,
+                buildingProduced = Entity.Null,
+                forceNodeProduced = Entity.Null,
             };
             buildOrdersAtPos.Add(newBOatPosition);
             Debug.Log("pos:" + localTransform.Position);

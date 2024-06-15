@@ -31,21 +31,11 @@ public class GridCellAuthoring : MonoBehaviour
             SetComponentEnabled<IsArenaTag>(entity, false);*/
             AddBuffer<GridCellArea>(entity);
 
-            int clearState = 254;
+            //int clearState = 254;
             AddComponent(entity, new GridCellVisualState());
-            SetComponent(entity, new GridCellVisualState { Value = (byte)clearState });
-            AddComponent(entity, new GridCellVisualStatePrevious { Value = (byte)clearState });
-
-            AddComponent(entity, new ClearGridCellVisualState()); 
-            //SetComponentEnabled<ClearGridCellVisualState>(entity, false) ;
-            AddComponent(entity, new ArenaGridCellVisualState());
-            //SetComponentEnabled<ArenaGridCellVisualState>(entity, false);
-            AddComponent(entity, new WorkshopGridCellVisualState());
-            //SetComponentEnabled<WorkshopGridCellVisualState>(entity, false);
-            AddComponent(entity, new KitchenGridCellVisualState());
-            //SetComponentEnabled<KitchenGridCellVisualState>(entity, false);
-            AddComponent(entity, new BarracksGridCellVisualState());
-            //SetComponentEnabled<BarracksGridCellVisualState>(entity, false); 
+            //SetComponent(entity, new GridCellVisualState { Value = (byte)clearState });
+            AddComponent(entity, new GridCellVisualStatePrevious());
+            //AddComponent(entity, new GridCellVisualStatePrevious { Value = (byte)clearState });
         }
     }
 }

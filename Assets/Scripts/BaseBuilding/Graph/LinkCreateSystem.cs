@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -22,8 +23,9 @@ public partial struct LinkCreateSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
+        //BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
+        //var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         //RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>();
         GraphConfig graphConfig = SystemAPI.GetSingleton<GraphConfig>();
 
@@ -46,5 +48,7 @@ public partial struct LinkCreateSystem : ISystem
                 ecb.SetComponentEnabled<SelectedCellTag>(selectedEntity, false); // this unselects the looped entities
             }
         }
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

@@ -35,5 +35,6 @@ public partial struct MarkForLinkCreationSystem : ISystem
             UnityEngine.Debug.Log("mark and unselect");
         }
         order.ValueRW.startLinking = false;
+        //ecb.Playback(state.EntityManager); the WorldUnmanaged ECB will automatically Playback at the end of Update cycle
     }
 }

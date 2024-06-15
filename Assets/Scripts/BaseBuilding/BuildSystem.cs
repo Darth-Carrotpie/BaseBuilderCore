@@ -1,6 +1,7 @@
 using BovineLabs.Core.States;
 using System;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -8,18 +9,15 @@ using Unity.Transforms;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
+[UpdateBefore(typeof(BuildOrderToPositionConsumerSystem))]
 [BurstCompile]
 public partial struct BuildSystem : ISystem
 {
+    EntityManager entityManager;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<BuildOrder>();
-        //Registering injects a query filter to the system State. This acts similar to RequireForUpdate
-        StateAPI.Register<GridCellVisualState, ArenaGridCellVisualState>(ref state, (byte)GridCellVisualStates.Arena, false);
-        StateAPI.Register<GridCellVisualState, WorkshopGridCellVisualState>(ref state, (byte)GridCellVisualStates.Workshop, false);
-        StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
-        StateAPI.Register<GridCellVisualState, BarracksGridCellVisualState>(ref state, (byte)GridCellVisualStates.Barracks, false);
-        StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
     public void OnStartRunning(ref SystemState state)
     {
@@ -29,7 +27,10 @@ public partial struct BuildSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        //state.Enabled = false; 
+        //dont run this, this system is old. Function moved to GridCellStateSetter
+
+        state.Enabled = false;
+        return;
 
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
@@ -48,7 +49,15 @@ public partial struct BuildSystem : ISystem
                 Rotation = quaternion.identity,
                 Scale = 1f
             });
-            ecb.SetComponent(selectedEntity, new GridCellVisualState { Value = OrderToState(order.ValueRW) });
+            byte newState = OrderToState(order.ValueRW);
+            UnityEngine.Debug.Log("new state in bytes: " + newState);
+            //ecb.SetComponent(selectedEntity, new GridCellVisualState { Value = OrderToState(order.ValueRW) });
+            RefRW<GridCellVisualState> cellState = entityManager.GetComponentObject<RefRW<GridCellVisualState>>(selectedEntity);
+            cellState.ValueRW.Value = newState;
+
+            //GridCellVisualState cellState = entityManager.GetComponentData<GridCellVisualState>(selectedEntity);
+            //cellState.Value = newState;
+
             ecb.SetComponent(building, new Parent { Value = selectedEntity });
             ecb.SetComponentEnabled<SelectedCellTag>(selectedEntity, false);
             if (gridCell.ValueRW.cellUI != Entity.Null)
@@ -64,6 +73,8 @@ public partial struct BuildSystem : ISystem
         }
         //this is not an order consumer, no need for this anymore:
         //order.ValueRW.classValue = BuildingType.None;
+
+        //ecb.Playback(state.EntityManager); the WorldUnmanaged ECB will automatically Playback at the end of Update cycle
     }
     public Entity GetOderPrefab(BuildOrder order)
     {
