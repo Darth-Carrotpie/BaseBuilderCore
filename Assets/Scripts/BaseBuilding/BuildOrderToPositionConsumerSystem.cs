@@ -2,6 +2,7 @@ using BovineLabs.Core.States;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -36,13 +37,29 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
         {
             //remove element from the DynamicBuffer if both conditions are met, thus completing the build cycle:
             if (buildOrdersAtPos[i].buildingProduced != Entity.Null && 
-                buildOrdersAtPos[i].forceNodeProduced != Entity.Null)
+                buildOrdersAtPos[i].forceNodeProduced != Entity.Null &&
+                buildOrdersAtPos[i].forceLinkProduced != Entity.Null)
             {
                 var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
                 var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
                 UnityEngine.Debug.Log("Consumer buildingProduced: " + bp+ "  forceNodeProduced:" + fp);
-                buildOrdersAtPos.RemoveAt(i); 
+                buildOrdersAtPos.RemoveAt(i);
+                continue;
             }
+            //if there is just a single node, there won't be anything to link to, so we remove the order
+            var nodesQuery = entityManager.CreateEntityQuery(typeof(ForceNode)).ToEntityArray(Allocator.TempJob);
+            if (nodesQuery.Length <= 1)
+            {
+                if (buildOrdersAtPos[i].buildingProduced != Entity.Null &&
+                    buildOrdersAtPos[i].forceNodeProduced != Entity.Null)
+                {
+                    var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                    var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                    UnityEngine.Debug.Log("Consumer buildingProduced: " + bp + "  forceNodeProduced:" + fp);
+                    buildOrdersAtPos.RemoveAt(i);
+                }
+            }
+
         }
 
         order.ValueRW.classValue = BuildingType.None;

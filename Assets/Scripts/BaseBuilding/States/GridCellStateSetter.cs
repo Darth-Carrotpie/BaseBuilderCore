@@ -22,13 +22,57 @@ public partial struct GridCellStateSetter : ISystem
     {
         state.RequireForUpdate<ForceNode>();
         state.RequireForUpdate<GridCell>();
+        //can use the StateAPI.Register just once per system. It's meant to use a single state for a single system.
         //Registering injects a query filter to the system State. This can act similar to RequireForUpdate if argument is true
-        StateAPI.Register<GridCellVisualState, ArenaGridCellVisualState>(ref state, (byte)GridCellVisualStates.Arena, false);
-        StateAPI.Register<GridCellVisualState, WorkshopGridCellVisualState>(ref state, (byte)GridCellVisualStates.Workshop, false);
-        StateAPI.Register<GridCellVisualState, BarracksGridCellVisualState>(ref state, (byte)GridCellVisualStates.Barracks, false);
-        StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
-        StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
+        //StateAPI.Register<GridCellVisualState, ArenaGridCellVisualState>(ref state, (byte)GridCellVisualStates.Arena, false);
+        //StateAPI.Register<GridCellVisualState, WorkshopGridCellVisualState>(ref state, (byte)GridCellVisualStates.Workshop, false);
+        //StateAPI.Register<GridCellVisualState, BarracksGridCellVisualState>(ref state, (byte)GridCellVisualStates.Barracks, false);
+        //StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
+        //StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        RegisterMultipleState(ref state);
+    }
+    void RegisterMultipleState(ref SystemState state)
+    {
+        var stateTypeIndex = TypeManager.GetTypeIndex<GridCellVisualState>();
+
+        var e0 = state.EntityManager.CreateEntity(typeof(StateInstance));
+        entityManager.SetComponentData(e0, new StateInstance
+        {
+            State = stateTypeIndex,
+            StateKey = (byte)GridCellVisualStates.Clear,
+            StateInstanceComponent = TypeManager.GetTypeIndex<ClearGridCellVisualState>(),
+        });
+
+        var e1 = state.EntityManager.CreateEntity(typeof(StateInstance));
+        entityManager.SetComponentData(e1, new StateInstance
+        {
+            State = stateTypeIndex,
+            StateKey = (byte)GridCellVisualStates.Arena,
+            StateInstanceComponent = TypeManager.GetTypeIndex<ArenaGridCellVisualState>(),
+        });
+        var e2 = state.EntityManager.CreateEntity(typeof(StateInstance));
+        entityManager.SetComponentData(e2, new StateInstance
+        {
+            State = stateTypeIndex,
+            StateKey = (byte)GridCellVisualStates.Workshop,
+            StateInstanceComponent = TypeManager.GetTypeIndex<WorkshopGridCellVisualState>(),
+        });
+        var e3 = state.EntityManager.CreateEntity(typeof(StateInstance));
+        entityManager.SetComponentData(e3, new StateInstance
+        {
+            State = stateTypeIndex,
+            StateKey = (byte)GridCellVisualStates.Barracks,
+            StateInstanceComponent = TypeManager.GetTypeIndex<BarracksGridCellVisualState>(),
+        });
+        var e4 = state.EntityManager.CreateEntity(typeof(StateInstance));
+        entityManager.SetComponentData(e4, new StateInstance
+        {
+            State = stateTypeIndex,
+            StateKey = (byte)GridCellVisualStates.Kitchen,
+            StateInstanceComponent = TypeManager.GetTypeIndex<KitchenGridCellVisualState>(),
+        });
+
     }
     public void OnStartRunning(ref SystemState state)
     {
@@ -64,11 +108,11 @@ public partial struct GridCellStateSetter : ISystem
                     if (currState.Value == (byte)GridCellVisualStates.Clear)
                     {
                         gridCellEntity = cellEntity.GridCellEntity;
-                        stateFullCells.Add(gridCellEntity);
                     }
+                    stateFullCells.Add(cellEntity.GridCellEntity);
                 }
             }
-            if(gridCellEntity == Entity.Null) continue; 
+            if(gridCellEntity == Entity.Null) continue;
             //set state of the grid cell to appropriate state of what the buildin of that force node
             Building building = entityManager.GetComponentData<Building>(forceNode.buildingRepr);
             byte newState = BuildingToCellState(building.buildingType);

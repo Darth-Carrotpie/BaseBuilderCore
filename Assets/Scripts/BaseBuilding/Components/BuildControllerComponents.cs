@@ -26,4 +26,5 @@ public struct BuildOrderAtPosition : IBufferElementData
     public float3 position;
     public Entity buildingProduced;
     public Entity forceNodeProduced;
+    public Entity forceLinkProduced;
 }

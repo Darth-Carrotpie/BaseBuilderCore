@@ -37,6 +37,10 @@ public partial class UnitSelectionSystem : SystemBase
     {
         if (SystemAPI.GetSingleton<BlockClickThrough>().Value) //this component follow if mouse if hovering over an UI element and wont allow to click!
             return;
+        if (UnityEngine.Input.GetMouseButtonUp(1))
+        {
+            DeselectAllUnits();
+        }
         if (UnityEngine.Input.GetMouseButtonUp(0))
         {
             //UnityEngine.Debug.Log("button clicked");

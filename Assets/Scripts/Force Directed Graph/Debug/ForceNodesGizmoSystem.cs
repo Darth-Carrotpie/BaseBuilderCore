@@ -35,7 +35,7 @@ public partial class ForceNodesGizmoSystem : SystemBase
             // Drawing sphere at the position
             Gizmos.DrawSphere(position, 0.2f);
         }).Run();
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.blue;
         Entities
         .ForEach((in LocalToWorld localToWorld, in ForceLink forceLink) =>
         {

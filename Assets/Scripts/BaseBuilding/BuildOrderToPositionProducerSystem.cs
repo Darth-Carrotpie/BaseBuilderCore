@@ -33,10 +33,9 @@ public partial struct BuildOrderToPositionProducerSystem : ISystem, ISystemStart
 
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity(); 
 
-        //DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = SystemAPI.GetSingleton<DynamicBuffer<BuildOrderAtPosition>>();
         DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<BuildOrderAtPosition>(orderEntity);
 
-        foreach ((var localTransform,var cell, var gridCell) in SystemAPI.Query<LocalTransform, SelectableCellTag, GridCell>().WithAll<SelectedCellTag>())
+        foreach ((var localTransform,var cell, var gridCell, Entity gridCellEntity) in SystemAPI.Query<LocalTransform, SelectableCellTag, GridCell>().WithAll<SelectedCellTag>().WithEntityAccess())
         {
             BuildOrderAtPosition newBOatPosition = new BuildOrderAtPosition
             {
@@ -47,6 +46,7 @@ public partial struct BuildOrderToPositionProducerSystem : ISystem, ISystemStart
             };
             buildOrdersAtPos.Add(newBOatPosition);
             Debug.Log("pos:" + localTransform.Position);
+            entityManager.SetComponentEnabled<SelectedCellTag>(gridCellEntity, false);
         }
         order.ValueRW.classValue = BuildingType.None;
     }
