@@ -1,3 +1,4 @@
+using BovineLabs.Core.Spatial;
 using BovineLabs.Core.States;
 using System;
 using System.Diagnostics;
@@ -30,7 +31,7 @@ public partial struct GridCellStateSetter : ISystem
         //StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
         //StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        RegisterMultipleState(ref state);
+        //RegisterMultipleState(ref state);
     }
     void RegisterMultipleState(ref SystemState state)
     {
@@ -98,39 +99,56 @@ public partial struct GridCellStateSetter : ISystem
         foreach ((ForceNode forceNode, DynamicBuffer<GridCellArea> dynBuffer) in SystemAPI.Query<ForceNode, DynamicBuffer<GridCellArea>>())
         {
             if (forceNode.buildingRepr == Entity.Null) continue;
-        //check their ref to current grid cell
+            //check their ref to current grid cell
             Entity gridCellEntity = Entity.Null;
-            foreach (var cellEntity in dynBuffer)
+            GridCellArea gca = dynBuffer.AsNativeArray().FirstOrDefault();
+            gridCellEntity = gca.GridCellEntity;
+
+            /*foreach (var bufferElement in dynBuffer)
             {
-                if(gridCellEntity == Entity.Null)
+                if (gridCellEntity == Entity.Null)
                 {
-                    GridCellVisualState currState = entityManager.GetComponentData<GridCellVisualState>(cellEntity.GridCellEntity);
+                    GridCellVisualState currState = entityManager.GetComponentData<GridCellVisualState>(bufferElement.GridCellEntity);
+                    //GridCellVisualStatePrevious prevState = entityManager.GetComponentData<GridCellVisualStatePrevious>(cellEntity.GridCellEntity);
                     if (currState.Value == (byte)GridCellVisualStates.Clear)
                     {
-                        gridCellEntity = cellEntity.GridCellEntity;
+                        gridCellEntity = bufferElement.GridCellEntity;
                     }
-                    stateFullCells.Add(cellEntity.GridCellEntity);
+                    stateFullCells.Add(bufferElement.GridCellEntity);
                 }
-            }
-            if(gridCellEntity == Entity.Null) continue;
+            }*/
+            if (gridCellEntity == Entity.Null) continue;
+            stateFullCells.Add(gridCellEntity);
+
             //set state of the grid cell to appropriate state of what the buildin of that force node
+            GridCellVisualState currState = entityManager.GetComponentData<GridCellVisualState>(gridCellEntity);
             Building building = entityManager.GetComponentData<Building>(forceNode.buildingRepr);
             byte newState = BuildingToCellState(building.buildingType);
-            ecb.SetComponent(gridCellEntity, new GridCellVisualState { Value = newState });
-            //UnityEngine.Debug.Log(entityManager.GetName(gridCellEntity)+ " <new state in bytes>: " + newState);
+
+            //somehow no matter how I try to change the state, it won't apply the change onto it.
+            //each frame I try this and each frame it fails silently. Try/catch?
+            if (currState.Value != newState)
+            {
+                currState.Value = newState;
+                //ecb.AddComponent(gridCellEntity, new GridCellVisualState { Value = newState });
+                UnityEngine.Debug.Log("setting new state:" + newState + " vs currState: " + currState.Value);
+                //UnityEngine.Debug.Log(entityManager.GetName(gridCellEntity)+ " <new state in bytes>: " + newState);
+            }
         }
         //clear all cells from their state which were not paired with a node
-        foreach ((RefRW<GridCell> gridCell, Entity cellEntity) in SystemAPI.Query<RefRW<GridCell>>().WithEntityAccess())
+        //if this is slow, could make it into a burstable job
+        /*foreach ((RefRW<GridCell> gridCell, Entity cellEntity) in SystemAPI.Query<RefRW<GridCell>>().WithNone<ClearGridCellVisualState>().WithEntityAccess())
         {
-            if (!stateFullCells.Contains(cellEntity))
-            {
+            if (!stateFullCells.Contains(cellEntity)) {
                 //ecb.SetComponent(cellEntity, new GridCellVisualState { Value = (byte)GridCellVisualStates.Clear });
                 ecb.SetComponent(cellEntity, new GridCellVisualState { Value = BuildingToCellState(BuildingType.Clear) });
                 //UnityEngine.Debug.Log(entityManager.GetName(cellEntity) + " <new state in bytes>: Clear");
+                UnityEngine.Debug.Log("setting new state:" + BuildingType.Clear);
             }
-        }
+        }*/
         stateFullCells.Dispose();
     }
+
     public Entity GetOderPrefab(BuildOrder order)
     {
         Entity output = Entity.Null;

@@ -19,12 +19,12 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnStopRunning(ref SystemState state)
     {
     }
      
-    [BurstCompile]
+    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
@@ -40,9 +40,9 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
                 buildOrdersAtPos[i].forceNodeProduced != Entity.Null &&
                 buildOrdersAtPos[i].forceLinkProduced != Entity.Null)
             {
-                var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
-                var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
-                UnityEngine.Debug.Log("Consumer buildingProduced: " + bp+ "  forceNodeProduced:" + fp);
+                //var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                ///var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                //UnityEngine.Debug.Log("Consumer buildingProduced: " + bp+ "  forceNodeProduced:" + fp);
                 buildOrdersAtPos.RemoveAt(i);
                 continue;
             }
@@ -53,9 +53,9 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
                 if (buildOrdersAtPos[i].buildingProduced != Entity.Null &&
                     buildOrdersAtPos[i].forceNodeProduced != Entity.Null)
                 {
-                    var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
-                    var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
-                    UnityEngine.Debug.Log("Consumer buildingProduced: " + bp + "  forceNodeProduced:" + fp);
+                    //var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                    //var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                    //UnityEngine.Debug.Log("Consumer buildingProduced: " + bp + "  forceNodeProduced:" + fp);
                     buildOrdersAtPos.RemoveAt(i);
                 }
             }

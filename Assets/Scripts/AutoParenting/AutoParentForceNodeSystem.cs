@@ -46,7 +46,7 @@ public partial struct AutoParentForceNodeSystem : ISystem
             if (parentCheck)
             {
                 //state.Enabled = false;
-                UnityEngine.Debug.Log("parented ForceNodes");
+                //UnityEngine.Debug.Log("parented ForceNodes");
             }
 
             //ecb.Playback(state.EntityManager);

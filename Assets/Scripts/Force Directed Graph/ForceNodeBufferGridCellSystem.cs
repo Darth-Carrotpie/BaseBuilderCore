@@ -41,7 +41,6 @@ public partial struct ForceNodeBufferGridCellSystem : ISystem
         state.Dependency = this.spatialMap.Build(cellsPositions, state.Dependency);
 
         GridGeneratorConfig config = SystemAPI.GetSingleton<GridGeneratorConfig>();
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         // The entities in this will match the indices from the spatial map
         var cellEntities = this.gridCellQuery.ToEntityListAsync(state.WorldUpdateAllocator, state.Dependency, out var cellDependency);
@@ -80,7 +79,7 @@ public partial struct ForceNodeBufferGridCellSystem : ISystem
             //easy to check that, just query them from another ISystem and DebugLog
             //if yes, to what entities are they added?
             neighbours.Clear();
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            //EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             // Find the min and max boxes
             // The boxes are of size Radius, 
@@ -111,10 +110,10 @@ public partial struct ForceNodeBufferGridCellSystem : ISystem
                             continue;
                         }
                         // Don't add a Node by accident
-                        if (entityManager.HasComponent<ForceNode>(otherEntity)) 
+                        /*if (entityManager.HasComponent<ForceNode>(otherEntity)) 
                         {
                             continue;
-                        }
+                        }*/
                         var otherPosition = this.CellsPositions[item].Position;
 
                         // The spatialmap serves as the broad-phase but most of the time we still need to ensure entities are actually within range

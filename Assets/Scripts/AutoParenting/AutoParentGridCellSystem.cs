@@ -25,7 +25,6 @@ public partial struct AutoParentGridCellSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        bool parentCheck = false;
         EndSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         var singletonQuery = SystemAPI.QueryBuilder().WithAll<HexCellParent>().Build();
@@ -36,11 +35,6 @@ public partial struct AutoParentGridCellSystem : ISystem
         {
             ecb.AddComponent<Parent>(entity);
             ecb.SetComponent(entity, new Parent { Value = parentEntity });
-            parentCheck = true;
-        }
-        if (parentCheck)
-        {
-            UnityEngine.Debug.Log("parented HexCells");
         }
     }
 }

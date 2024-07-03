@@ -61,7 +61,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
             AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<BuildingsParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: Buildings!");
+            //UnityEngine.Debug.Log("parent created: Buildings!");
         }
     }
     void CreateParentHexCell<T>(EntityCommandBuffer ecb, SystemState state)
@@ -74,7 +74,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
             AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<HexCellParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: HexCells!");
+            //UnityEngine.Debug.Log("parent created: HexCells!");
         }
     }
     void CreateParentNodes<T>(EntityCommandBuffer ecb, SystemState state)
@@ -87,7 +87,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
             AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<NodesParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: ForceNodes!");
+            //UnityEngine.Debug.Log("parent created: ForceNodes!");
             /*ecb.AddComponent<PhysicsStep>(newParentEntity);
             ecb.SetComponent<PhysicsStep>(newParentEntity, new PhysicsStep
             {
@@ -107,7 +107,7 @@ public partial struct AutoParentingCreateParentsSystem : ISystem
             AddDefaultsToParent(ecb, newParentEntity);
             ecb.AddComponent<LinksParent>(newParentEntity);
             ecb.SetName(newParentEntity, typeof(T).Name);
-            UnityEngine.Debug.Log("parent created: ForceLinks!");
+            //UnityEngine.Debug.Log("parent created: ForceLinks!");
         }
     }
 
