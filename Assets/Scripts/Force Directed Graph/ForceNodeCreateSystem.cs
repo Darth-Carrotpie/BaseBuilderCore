@@ -55,11 +55,12 @@ public partial struct ForceNodeCreateSystem : ISystem
             if (bo.forceNodeProduced != Entity.Null) return;
             //var nm = entityManager.GetName(bo.buildingProduced);
             //UnityEngine.Debug.Log("CreateForceNodeAtPosition buildingRepr: "+ nm);
-            Entity newNode = CreateForceNodeAtPosition(bo.buildingProduced, bo.position, ref state);
+            Entity newNode = CreateForceNodeAtPosition(bo.buildingProduced, bo.position, bo.isFirst, ref state);
 
             //swap the order with new node
             BuildOrderAtPosition newBo = new BuildOrderAtPosition 
             {
+                isFirst = bo.isFirst,
                 buildOrder = bo.buildOrder,
                 buildingProduced = bo.buildingProduced,
                 forceNodeProduced = newNode,
@@ -94,7 +95,7 @@ public partial struct ForceNodeCreateSystem : ISystem
         });
         ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity }); 
     }*/
-    public Entity CreateForceNodeAtPosition(Entity buildingEntity, float3 position, ref SystemState state)
+    public Entity CreateForceNodeAtPosition(Entity buildingEntity, float3 position, bool isFirst, ref SystemState state)
     {
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
@@ -115,6 +116,11 @@ public partial struct ForceNodeCreateSystem : ISystem
         });
         ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
         ecb.SetName(newNode, "ForceNode_x:" + position.x+"_z:"+position.z);
+        if(isFirst)
+        {
+            ecb.AddComponent<MarkedNodeForLinkStart>(newNode);
+            UnityEngine.Debug.Log("create first node Marker");
+        }
         //ecb.Playback(state.EntityManager);
         //ecb.Dispose();
         return newNode;

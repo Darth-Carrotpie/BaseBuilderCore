@@ -23,3 +23,5 @@ public struct HexNode : IComponentData
 public struct LinkOrder : IComponentData { public bool startLinking; }
 
 public struct MarkedForLinkStart : IComponentData { }
+
+public struct MarkedNodeForLinkStart : IComponentData { }

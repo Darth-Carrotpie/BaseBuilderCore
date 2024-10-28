@@ -35,10 +35,26 @@ public partial struct BuildOrderToPositionProducerSystem : ISystem, ISystemStart
 
         DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<BuildOrderAtPosition>(orderEntity);
 
-        foreach ((var localTransform,var cell, var gridCell, Entity gridCellEntity) in SystemAPI.Query<LocalTransform, SelectableCellTag, GridCell>().WithAll<SelectedCellTag>().WithEntityAccess())
+        foreach ((var localTransform, var cell, var gridCell, Entity gridCellEntity) in SystemAPI.Query<LocalTransform, SelectableCellTag, GridCell>().WithAll<SelectedCellTag>().WithAll<MarkedForLinkStart>().WithEntityAccess())
         {
             BuildOrderAtPosition newBOatPosition = new BuildOrderAtPosition
             {
+                isFirst = true,
+                buildOrder = order.ValueRW,
+                position = localTransform.Position,
+                buildingProduced = Entity.Null,
+                forceNodeProduced = Entity.Null,
+            };
+            buildOrdersAtPos.Add(newBOatPosition);
+            Debug.Log("pos:" + localTransform.Position);
+            entityManager.SetComponentEnabled<SelectedCellTag>(gridCellEntity, false);
+        }
+
+        foreach ((var localTransform,var cell, var gridCell, Entity gridCellEntity) in SystemAPI.Query<LocalTransform, SelectableCellTag, GridCell>().WithAll<SelectedCellTag>().WithNone<MarkedForLinkStart>().WithEntityAccess())
+        {
+            BuildOrderAtPosition newBOatPosition = new BuildOrderAtPosition
+            {
+                isFirst = false,
                 buildOrder = order.ValueRW,
                 position = localTransform.Position,
                 buildingProduced = Entity.Null,

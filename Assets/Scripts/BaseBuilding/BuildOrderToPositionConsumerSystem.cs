@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [UpdateInGroup(typeof(ConsumerSystemsGroup))]
 public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStartStop
@@ -18,8 +19,6 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
-
-    //[BurstCompile]
     public void OnStopRunning(ref SystemState state)
     {
     }
@@ -27,18 +26,28 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
     //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
         Entity orderEntity = entityManager.CreateEntityQuery(typeof(BuildOrder)).GetSingletonEntity();
-
         DynamicBuffer<BuildOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<BuildOrderAtPosition>(orderEntity);
-        if (buildOrdersAtPos.Length <= 0) return;
+
+        //consume Markers which help identify data for build orders:
+        if (buildOrdersAtPos.Length <= 0)
+        {
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
+            foreach (var (marker, entity) in SystemAPI.Query<MarkedNodeForLinkStart>().WithEntityAccess())
+            {
+                ecb.RemoveComponent<MarkedNodeForLinkStart>(entity);
+            }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
+            return;
+        }
 
         for (int i = buildOrdersAtPos.Length-1; i>=0; i--)
         {
-            //remove element from the DynamicBuffer if both conditions are met, thus completing the build cycle:
+            //remove element from the DynamicBuffer if both conditions are met, thus completing the build cycle: 
             if (buildOrdersAtPos[i].buildingProduced != Entity.Null && 
                 buildOrdersAtPos[i].forceNodeProduced != Entity.Null &&
-                buildOrdersAtPos[i].forceLinkProduced != Entity.Null)
+                (buildOrdersAtPos[i].isFirst || buildOrdersAtPos[i].forceLinkProduced != Entity.Null) )
             {
                 //var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
                 ///var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
@@ -61,7 +70,17 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
             }
 
         }
-
-        order.ValueRW.classValue = BuildingType.None;
+        if (buildOrdersAtPos.Length <= 0)
+        {
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
+            foreach (var (marker, entity) in SystemAPI.Query<MarkedNodeForLinkStart>().WithEntityAccess())
+            {
+                ecb.RemoveComponent<MarkedNodeForLinkStart>(entity);
+            }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
+        }
+        RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
+        order.ValueRW.classValue = BuildingType.None; 
     }
 }

@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
-
+//new link create script: LinkFactory
 [BurstCompile]
 public partial struct LinkCreateSystem : ISystem
 {
@@ -23,14 +23,16 @@ public partial struct LinkCreateSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        /*
         //BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = new EntityCommandBuffer(Allocator.TempJob);
         //var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         //RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>();
         GraphConfig graphConfig = SystemAPI.GetSingleton<GraphConfig>();
+        MarkedForLinkStart linkStartMark = SystemAPI.GetSingleton<MarkedForLinkStart>();
 
         foreach ((RefRW<SelectableCellTag> cell, RefRW<GridCell> gridCell, Entity selectedEntity) in SystemAPI.Query<RefRW<SelectableCellTag>, RefRW<GridCell>>().WithAll<SelectedCellTag>().WithEntityAccess()){
-            foreach ((MarkedForLinkStart linkStartMarker, Entity linkStart) in SystemAPI.Query<MarkedForLinkStart>().WithEntityAccess()){
+            foreach ((MarkedForLink linkStartMarker, Entity linkStart) in SystemAPI.Query<MarkedForLink>().WithEntityAccess()){
                 var linkEntity = ecb.Instantiate(graphConfig.linkPrefabEntity);
                 ecb.AddComponent<Parent>(linkEntity);
                 ecb.SetComponent(linkEntity, new LocalTransform
@@ -49,6 +51,6 @@ public partial struct LinkCreateSystem : ISystem
             }
         }
         ecb.Playback(state.EntityManager);
-        ecb.Dispose();
+        ecb.Dispose();*/
     }
 }

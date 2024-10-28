@@ -22,6 +22,7 @@ public struct BlockClickThrough : IComponentData
 
 public struct BuildOrderAtPosition : IBufferElementData
 {
+    public bool isFirst;
     public BuildOrder buildOrder;
     public float3 position;
     public Entity buildingProduced;
