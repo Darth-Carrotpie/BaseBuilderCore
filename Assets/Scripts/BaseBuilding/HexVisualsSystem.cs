@@ -7,10 +7,13 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine.InputSystem.LowLevel;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
 [UpdateBefore(typeof(BuildOrderToPositionConsumerSystem))]
+[UpdateBefore(typeof(GridCellStateSetterTest))]
+[UpdateBefore(typeof(GridCellStateSetter))]
 //[BurstCompile]
 public partial struct HexVisualsSystem : ISystem
 {
@@ -31,33 +34,22 @@ public partial struct HexVisualsSystem : ISystem
         //state.Enabled = false;
         //return;
 
+
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
         RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
 
-        foreach ((var vState, var gridCell, var prevState, var currState, Entity selectedEntity) in SystemAPI.Query<ArenaGridCellVisualState, RefRW<GridCell>, GridCellVisualStatePrevious, GridCellVisualState>().WithEntityAccess())
-        {
-            if (prevState.Value == currState.Value) return;
-            //UnityEngine.Debug.Log("State changed for at least one ArenaGridCellVisualState!");
 
-            Entity toBuild = order.ValueRW.cellPrefabEntityArena;
-            InstantiateVisuals(toBuild, ecb, selectedEntity, gridCell);
-        }
-        foreach ((var vState, var gridCell, var prevState, var currState, Entity selectedEntity) in SystemAPI.Query<ClearGridCellVisualState, RefRW<GridCell>, GridCellVisualStatePrevious, GridCellVisualState>().WithEntityAccess())
+        foreach ((var prevState, var currState, var gridCell, Entity statChangeEntity) in SystemAPI.Query<GridCellVisualStatePrevious, GridCellVisualState, RefRW<GridCell>>().WithEntityAccess())
         {
-            if (prevState.Value == currState.Value) return;
-            //UnityEngine.Debug.Log("State changed for at least one ClearGridCellVisualState!");
+            if (prevState.Value != currState.Value)
+            {
+                Entity toBuild = StateByteToPrefab(currState.Value, order);
+                InstantiateVisuals(toBuild, ecb, statChangeEntity, gridCell);
 
-            Entity toBuild = order.ValueRW.cellPrefabEntityClear;
-            InstantiateVisuals(toBuild, ecb, selectedEntity, gridCell);
-        }
-        foreach ((var vState, var gridCell, var prevState, var currState, Entity selectedEntity) in SystemAPI.Query<WorkshopGridCellVisualState, RefRW<GridCell>, GridCellVisualStatePrevious, GridCellVisualState>().WithEntityAccess())
-        {
-            if (prevState.Value == currState.Value) return;
-            //UnityEngine.Debug.Log("State changed for at least one ClearGridCellVisualState!");
-
-            Entity toBuild = order.ValueRW.cellPrefabEntityWorkshop;
-            InstantiateVisuals(toBuild, ecb, selectedEntity, gridCell);
+                string entName = entityManager.GetName(statChangeEntity);
+                UnityEngine.Debug.Log("RefRW+State!>> Changed: " + entName + ">>>  prevState:" + prevState.Value + " currState: " + currState.Value);
+            }
         }
     }
     public void InstantiateVisuals(Entity toBuild, EntityCommandBuffer ecb, Entity selectedEntity, RefRW<GridCell> gridCell)
@@ -78,7 +70,7 @@ public partial struct HexVisualsSystem : ISystem
 
         ecb.SetComponent(newVisualModel, new Parent { Value = selectedEntity });
 
-        //UnityEngine.Debug.Log("setting new :" + newVisualModel);
+        UnityEngine.Debug.Log("setting new :" + newVisualModel);
 
         ecb.SetComponent(selectedEntity, new GridCell { cellUI = newVisualModel }); //this is not working!!!! WHYY!!!
         //string hexName = World.DefaultGameObjectInjectionWorld.EntityManager.GetName(selectedEntity);
@@ -87,16 +79,16 @@ public partial struct HexVisualsSystem : ISystem
         //ecb.SetName(selectionUI, "Selector_of_"+selectedEntity);
     }
 
-    public Entity GetOderPrefab(BuildOrder order)
+    public Entity StateByteToPrefab(byte stateByte, RefRW<BuildOrder> order)
     {
         Entity output = Entity.Null;
-        switch (order.classValue)
+        switch (stateByte)
         {
-            case BuildingType.Clear: output = order.cellPrefabEntityClear; break;
-            case BuildingType.Workshop: output = order.cellPrefabEntityWorkshop; break;
-            case BuildingType.Kitchen: output = order.cellPrefabEntityKitchen; break;
-            case BuildingType.Barracks: output = order.cellPrefabEntityBarracks; break;
-            case BuildingType.Arena: output = order.cellPrefabEntityArena; break;
+            case (byte)GridCellVisualStates.Clear: output = order.ValueRW.cellPrefabEntityClear; break;
+            case (byte)GridCellVisualStates.Workshop: output = order.ValueRW.cellPrefabEntityWorkshop; break;
+            case (byte)GridCellVisualStates.Kitchen: output = order.ValueRW.cellPrefabEntityKitchen; break;
+            case (byte)GridCellVisualStates.Barracks: output = order.ValueRW.cellPrefabEntityBarracks; break;
+            case (byte)GridCellVisualStates.Arena: output = order.ValueRW.cellPrefabEntityArena; break;
         }
         return output;
     }

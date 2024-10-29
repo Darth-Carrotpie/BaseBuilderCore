@@ -31,7 +31,7 @@ public partial struct GridCellStateSetter : ISystem
         //StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
         //StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        //RegisterMultipleState(ref state);
+        RegisterMultipleState(ref state);
     }
     void RegisterMultipleState(ref SystemState state)
     {
@@ -122,6 +122,7 @@ public partial struct GridCellStateSetter : ISystem
 
             //set state of the grid cell to appropriate state of what the buildin of that force node
             GridCellVisualState currState = entityManager.GetComponentData<GridCellVisualState>(gridCellEntity);
+            GridCellVisualStatePrevious prevState = entityManager.GetComponentData<GridCellVisualStatePrevious>(gridCellEntity);
             Building building = entityManager.GetComponentData<Building>(forceNode.buildingRepr);
             byte newState = BuildingToCellState(building.buildingType);
 
@@ -129,15 +130,18 @@ public partial struct GridCellStateSetter : ISystem
             //each frame I try this and each frame it fails silently. Try/catch?
             if (currState.Value != newState)
             {
-                currState.Value = newState;
-                //ecb.AddComponent(gridCellEntity, new GridCellVisualState { Value = newState });
-                UnityEngine.Debug.Log("setting new state:" + newState + " vs currState: " + currState.Value);
+                //currState.Value = newState;
+                //this--------------------------------
+                string entName = entityManager.GetName(gridCellEntity);
+                //UnityEngine.Debug.Log(entName+" >>> prevState:"+ prevState.Value + " currState: " + currState.Value + "  newState:" + newState );
+                ecb.AddComponent(gridCellEntity, new GridCellVisualState { Value = newState });
+                //------------------------------
                 //UnityEngine.Debug.Log(entityManager.GetName(gridCellEntity)+ " <new state in bytes>: " + newState);
             }
         }
         //clear all cells from their state which were not paired with a node
         //if this is slow, could make it into a burstable job
-        /*foreach ((RefRW<GridCell> gridCell, Entity cellEntity) in SystemAPI.Query<RefRW<GridCell>>().WithNone<ClearGridCellVisualState>().WithEntityAccess())
+        foreach ((RefRW<GridCell> gridCell, Entity cellEntity) in SystemAPI.Query<RefRW<GridCell>>().WithNone<ClearGridCellVisualState>().WithEntityAccess())
         {
             if (!stateFullCells.Contains(cellEntity)) {
                 //ecb.SetComponent(cellEntity, new GridCellVisualState { Value = (byte)GridCellVisualStates.Clear });
@@ -145,7 +149,7 @@ public partial struct GridCellStateSetter : ISystem
                 //UnityEngine.Debug.Log(entityManager.GetName(cellEntity) + " <new state in bytes>: Clear");
                 UnityEngine.Debug.Log("setting new state:" + BuildingType.Clear);
             }
-        }*/
+        }
         stateFullCells.Dispose();
     }
 

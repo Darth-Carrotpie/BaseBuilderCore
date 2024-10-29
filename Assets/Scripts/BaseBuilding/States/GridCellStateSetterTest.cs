@@ -17,6 +17,7 @@ using static UnityEngine.Rendering.DebugUI;
 [BurstCompile]
 public partial struct GridCellStateSetterTest : ISystem
 {
+    //Only use this system if no other systems are registering or changing the state
     EntityManager entityManager;
     public void OnCreate(ref SystemState state)
     {
@@ -29,7 +30,8 @@ public partial struct GridCellStateSetterTest : ISystem
         //StateAPI.Register<GridCellVisualState, KitchenGridCellVisualState>(ref state, (byte)GridCellVisualStates.Kitchen, false);
         //StateAPI.Register<GridCellVisualState, ClearGridCellVisualState>(ref state, (byte)GridCellVisualStates.Clear, false);
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        RegisterMultipleState(ref state);
+        //Only use this system if no other systems are registering or changing the state
+        //RegisterMultipleState(ref state);
     }
     void RegisterMultipleState(ref SystemState state)
     {
@@ -81,26 +83,40 @@ public partial struct GridCellStateSetterTest : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        //state.Enabled = false;
-        //return;
+        //Only use this system if no other systems are changing the state
+        state.Enabled = false;
+        return;
 
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
 
         byte newState = 0;
-        if (Input.GetKeyUp(KeyCode.Alpha0))
+        if (Input.GetKeyUp(KeyCode.BackQuote))
         {
             newState = (byte)GridCellVisualStates.Clear;
+            UnityEngine.Debug.Log("Set state to Clear");
         }
         if (Input.GetKeyUp(KeyCode.Alpha1))
         {
             newState = (byte)GridCellVisualStates.Workshop;
+            UnityEngine.Debug.Log("Set state to Workshop");
         }
         if (Input.GetKeyUp(KeyCode.Alpha2))
         {
-            newState = (byte)GridCellVisualStates.Arena;
+            newState = (byte)GridCellVisualStates.Kitchen;
+            UnityEngine.Debug.Log("Set state to Kitchen");
         }
-
+        if (Input.GetKeyUp(KeyCode.Alpha3))
+        {
+            newState = (byte)GridCellVisualStates.Barracks;
+            UnityEngine.Debug.Log("Set state to Barracks");
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha4))
+        {
+            newState = (byte)GridCellVisualStates.Arena;
+            UnityEngine.Debug.Log("Set state to Arena");
+        }
+        if (newState == 0) return;
         //Set new state:
         //query all GridCells and set their state to a particular state
         //for the test to work, regular GridCellStateSetter has to be disabled
