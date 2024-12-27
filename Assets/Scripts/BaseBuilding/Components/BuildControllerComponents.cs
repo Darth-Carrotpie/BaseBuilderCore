@@ -29,3 +29,13 @@ public struct BuildOrderAtPosition : IBufferElementData
     public Entity forceNodeProduced;
     public Entity forceLinkProduced;
 }
+public struct DestroyOrder : IComponentData, IEnableableComponent{}
+
+public struct DestroyOrderAtPosition : IBufferElementData
+{
+    public float3 position;
+    public bool buildingDestroyed;
+    public bool forceNodeDestroyed;
+    public bool forceLinkDestroyed;
+    public int TTL;
+}
