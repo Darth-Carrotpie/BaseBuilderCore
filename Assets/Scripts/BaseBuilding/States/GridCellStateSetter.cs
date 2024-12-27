@@ -147,7 +147,7 @@ public partial struct GridCellStateSetter : ISystem
                 //ecb.SetComponent(cellEntity, new GridCellVisualState { Value = (byte)GridCellVisualStates.Clear });
                 ecb.SetComponent(cellEntity, new GridCellVisualState { Value = BuildingToCellState(BuildingType.Clear) });
                 //UnityEngine.Debug.Log(entityManager.GetName(cellEntity) + " <new state in bytes>: Clear");
-                UnityEngine.Debug.Log("setting new state:" + BuildingType.Clear);
+                //UnityEngine.Debug.Log("setting new state:" + BuildingType.Clear);
             }
         }
         stateFullCells.Dispose();

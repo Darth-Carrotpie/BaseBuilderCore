@@ -42,16 +42,17 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
             return;
         }
 
-        for (int i = buildOrdersAtPos.Length-1; i>=0; i--)
-        {
+        for (int i = buildOrdersAtPos.Length-1; i>=0; i--) {
             //remove element from the DynamicBuffer if both conditions are met, thus completing the build cycle: 
             if (buildOrdersAtPos[i].buildingProduced != Entity.Null && 
                 buildOrdersAtPos[i].forceNodeProduced != Entity.Null &&
-                (buildOrdersAtPos[i].isFirst || buildOrdersAtPos[i].forceLinkProduced != Entity.Null) )
+                (buildOrdersAtPos[i].forceLinkProduced != Entity.Null ||
+                entityManager.HasComponent<MarkedNodeForLinkStart>(buildOrdersAtPos[i].forceNodeProduced)
+                ) )
             {
-                //var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
-                ///var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
-                //UnityEngine.Debug.Log("Consumer buildingProduced: " + bp+ "  forceNodeProduced:" + fp);
+                var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                UnityEngine.Debug.Log("Consumed buildOrdersAtPos: " + bp+ "  forceNodeProduced:" + fp);
                 buildOrdersAtPos.RemoveAt(i);
                 continue;
             }
@@ -62,9 +63,9 @@ public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStart
                 if (buildOrdersAtPos[i].buildingProduced != Entity.Null &&
                     buildOrdersAtPos[i].forceNodeProduced != Entity.Null)
                 {
-                    //var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
-                    //var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
-                    //UnityEngine.Debug.Log("Consumer buildingProduced: " + bp + "  forceNodeProduced:" + fp);
+                    var bp = entityManager.GetName(buildOrdersAtPos[i].buildingProduced);
+                    var fp = entityManager.GetName(buildOrdersAtPos[i].forceNodeProduced);
+                    UnityEngine.Debug.Log("Consumed buildOrdersAtPos: " + bp + "  forceNodeProduced:" + fp);
                     buildOrdersAtPos.RemoveAt(i);
                 }
             }

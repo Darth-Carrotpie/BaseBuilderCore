@@ -44,54 +44,15 @@ public partial struct LinkFactory : ISystem
                 UnityEngine.Debug.Log("-------------------New order check for ForceLink!!-------------");
                 BuildOrderAtPosition bo = buildOrdersAtPos[i];
                 if (bo.forceLinkProduced != Entity.Null || bo.forceNodeProduced == Entity.Null) return;
-                //find closest node
-                //Entity closestNode = Entity.Null;
-                //float closestDist = 9999f;
+
                 float3 nodeAPos = entityManager.GetComponentData<LocalToWorld>(bo.forceNodeProduced).Position;
                 if (bo.forceNodeProduced == markStartEntity)
                 {
-                    //perhaps create a dummy link?
-                    //var newBoSelf = bo;
-                    //newBoSelf.forceLinkProduced = newLinkEntity;
-                    //buildOrdersAtPos[i] = newBo;
+
                     UnityEngine.Debug.Log("Skipping self!!");
                     continue;
                 }
-                /*foreach((var node, var localTr, var nodeEntity) in SystemAPI.Query<ForceNode, LocalTransform>().WithEntityAccess())
-                {
-                    if (nodeEntity == markStartEntity)
-                    {
-                            UnityEngine.Debug.Log("Skipping self!!");
-                        continue;
-                    }
-                    UnityEngine.Debug.Log("Checking node dist: "+entityManager.GetName(nodeEntity));
-                    float3 direction = nodeAPos - localTr.Position;
-                    //float testDist = math.length(nodeAPos-localTr.Position);
-                    /*float distance = (float)math.sqrt(direction.x * direction.x + direction.z * direction.z);
 
-
-                    if (closestNode != Entity.Null)
-                    {
-                        UnityEngine.Debug.Log("distance check: "+ distance + " vs "+ closestDist);
-                        if(distance < closestDist)
-                        {
-                            UnityEngine.Debug.Log("Found Closer!!");
-                            closestDist = distance;
-                            closestNode = nodeEntity;
-                        } else
-                        {
-                            UnityEngine.Debug.Log("too far!!");
-                        }
-                    } else
-                    {
-                            UnityEngine.Debug.Log("set initial params:" + distance + " vs " + closestDist);
-                        closestDist = distance;
-                        closestNode = nodeEntity;
-                    }
-                }*/
-                //If there are no closest no candidates, do nothing 
-                //if (closestNode == Entity.Null) {continue; }
-                //create ForceLink component 
                 ForceLink newLink = new ForceLink
                 {
                     nodeA = bo.forceNodeProduced,

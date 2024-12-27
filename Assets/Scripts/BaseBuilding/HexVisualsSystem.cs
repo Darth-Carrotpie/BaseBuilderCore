@@ -48,7 +48,7 @@ public partial struct HexVisualsSystem : ISystem
                 InstantiateVisuals(toBuild, ecb, statChangeEntity, gridCell);
 
                 string entName = entityManager.GetName(statChangeEntity);
-                UnityEngine.Debug.Log("RefRW+State!>> Changed: " + entName + ">>>  prevState:" + prevState.Value + " currState: " + currState.Value);
+                //UnityEngine.Debug.Log("RefRW+State!>> Changed: " + entName + ">>>  prevState:" + prevState.Value + " currState: " + currState.Value);
             }
         }
     }
@@ -70,7 +70,7 @@ public partial struct HexVisualsSystem : ISystem
 
         ecb.SetComponent(newVisualModel, new Parent { Value = selectedEntity });
 
-        UnityEngine.Debug.Log("setting new :" + newVisualModel);
+        //UnityEngine.Debug.Log("setting new :" + newVisualModel);
 
         ecb.SetComponent(selectedEntity, new GridCell { cellUI = newVisualModel }); //this is not working!!!! WHYY!!!
         //string hexName = World.DefaultGameObjectInjectionWorld.EntityManager.GetName(selectedEntity);

@@ -135,7 +135,7 @@ public partial struct ForceNodeBufferGridCellSystem : ISystem
 
 }
 
-//this shouldnt be neighrbour building, instead either Repr Building or LocalGridCell
+//this shouldnt be neighbour building, instead either Repr Building or LocalGridCell
 //Then another System would match update GridCell type when querying Nodes.
 public struct GridCellArea : IBufferElementData
 {

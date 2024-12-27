@@ -116,11 +116,7 @@ public partial struct ForceNodeCreateSystem : ISystem
         });
         ecb.SetComponent(newNode, new ForceNode { buildingRepr = buildingEntity });
         ecb.SetName(newNode, "ForceNode_x:" + position.x+"_z:"+position.z);
-        if(isFirst)
-        {
-            ecb.AddComponent<MarkedNodeForLinkStart>(newNode);
-            UnityEngine.Debug.Log("create first node Marker");
-        }
+
         //ecb.Playback(state.EntityManager);
         //ecb.Dispose();
         return newNode;

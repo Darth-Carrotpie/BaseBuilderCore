@@ -23,7 +23,7 @@ public partial struct DestroySystem : ISystem
 
         foreach ((MarkedForDestruction tag, Entity entity) in SystemAPI.Query<MarkedForDestruction>().WithEntityAccess())
         {
-            UnityEngine.Debug.Log("destroy entity: " + entity);
+            //UnityEngine.Debug.Log("destroy entity: " + entity);
             ecb.DestroyEntity(entity);
         }
     }
