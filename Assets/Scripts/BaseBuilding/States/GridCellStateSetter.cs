@@ -21,7 +21,7 @@ public partial struct GridCellStateSetter : ISystem
     EntityManager entityManager;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<ForceNode>();
+        //state.RequireForUpdate<ForceNode>(); //there can be an empty map after last node is destroyed. Do not require ForceNode otherwise visuals will not update!
         state.RequireForUpdate<GridCell>();
         //can use the StateAPI.Register just once per system. It's meant to use a single state for a single system.
         //Registering injects a query filter to the system State. This can act similar to RequireForUpdate if argument is true

@@ -1,17 +1,10 @@
-using BovineLabs.Core.States;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Transforms;
-using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 [UpdateInGroup(typeof(ConsumerSystemsGroup))]
 public partial struct BuildOrderToPositionConsumerSystem : ISystem, ISystemStartStop
 {
-    private StateModel impl;
     EntityManager entityManager;
 
     [BurstCompile]

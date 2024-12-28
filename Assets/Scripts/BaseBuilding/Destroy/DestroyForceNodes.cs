@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
@@ -10,12 +12,12 @@ using UnityEngine;
 public partial struct DestroyForceNodes : ISystem
 {
     //EntityManager entityManager;
-    public void OnCreate(ref SystemState state)
-    {
-        //entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    public void OnCreate(ref SystemState state) {
     }
-    public void OnStartRunning(ref SystemState state)
-    {
+
+    [BurstCompile]
+    public void OnStartRunning(ref SystemState state) {
+        //entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
     public void OnDestroy(ref SystemState state)
     {
@@ -28,18 +30,22 @@ public partial struct DestroyForceNodes : ISystem
         Entity orderEntity = SystemAPI.GetSingletonEntity<DestroyOrder>();
         DynamicBuffer<DestroyOrderAtPosition> destroyOrderAtPos = SystemAPI.GetBuffer<DestroyOrderAtPosition>(orderEntity);
         
-        //containx hex grid size:
+        //contains hex grid size:
         GridGeneratorConfig config = SystemAPI.GetSingleton<GridGeneratorConfig>();
 
 
-        foreach ((LocalTransform localTransform, ForceNode node, DynamicBuffer <GridCellArea> dynBuffer, Entity entity) in SystemAPI.Query<LocalTransform, ForceNode, DynamicBuffer<GridCellArea>>().WithEntityAccess())
+        foreach ((LocalTransform localTransform, ForceNode node, DynamicBuffer <GridCellArea> dynBuffer, Entity nodeEntity) in SystemAPI.Query<LocalTransform, ForceNode, DynamicBuffer<GridCellArea>>().WithEntityAccess())
         {
             for (int i = destroyOrderAtPos.Length-1; i >=0; i--) {
-                UnityEngine.Debug.Log("Query ForceNode at position");
-
                 DestroyOrderAtPosition order = destroyOrderAtPos[i];
                 if (order.forceNodeDestroyed == true) continue;
-                if (order.forceLinkDestroyed == false) continue;
+                if (order.forceLinkDestroyed == false) {
+
+                    //skip this if the node still has any links
+                    if (GetLinksAmountForNode(nodeEntity, ref state) != 0) {
+                        continue;
+                    }
+                }
 
                 //check their ref to current grid cell
                 GridCellArea gca = dynBuffer.AsNativeArray().FirstOrDefault();
@@ -52,7 +58,7 @@ public partial struct DestroyForceNodes : ISystem
                 if (math.distance(gridCellTransform.Position, order.position) < config.hexRadius/2f)
                 {
                     // Destroy the ForceNode if it correlates with the order
-                    ecb.AddComponent(entity, new MarkedForDestruction { }); //this will tag to destroy entity later
+                    ecb.AddComponent(nodeEntity, new MarkedForDestruction { }); //this will tag to destroy entity later
                     // Put tag for destruction to the data layer
                     ecb.AddComponent(node.buildingRepr, new MarkedForDestruction { }); //this will tag to destroy entity later
                     //ecb.DestroyEntity(entity);
@@ -65,5 +71,16 @@ public partial struct DestroyForceNodes : ISystem
                 }
             }
         }
+    }
+
+    int GetLinksAmountForNode(Entity nodeEntity, ref SystemState state) {
+        //var linksQuery = entityManager.CreateEntityQuery(typeof(ForceLink)).ToEntityArray(Allocator.TempJob);
+        int amount = 0;
+        foreach(ForceLink link in SystemAPI.Query<ForceLink>()) {
+            if (link.nodeA == nodeEntity || link.nodeB == nodeEntity) {
+                amount++;
+            }
+        }
+        return amount;
     }
 }
