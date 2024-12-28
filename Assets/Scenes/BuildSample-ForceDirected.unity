@@ -846,8 +846,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 691401910}
-        m_TargetAssemblyTypeName: MakeLinksButton, Assembly-CSharp
-        m_MethodName: MakeLinks
+        m_TargetAssemblyTypeName: DestroyOrderInput, Assembly-CSharp
+        m_MethodName: DestroySelectedNodes
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

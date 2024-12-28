@@ -16,11 +16,9 @@ public class ForceNodeAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new ForceNode
             {
-                //cellUI = GetEntity(authoring.unbuiltPrefab, TransformUsageFlags.Dynamic),
+                //buildingRepr - this contains a reference toi the data layer
             });
             AddBuffer<GridCellArea>(entity);
-            //AddComponent(entity, new PhysicsVelocity { });
-            //AddComponent(entity, new PhysicsMass { InverseMass = 1f, InverseInertia = float3.zero });
         }
-    } 
+    }
 }

@@ -59,6 +59,5 @@ public class BuildButtonMenu : MonoBehaviour
         };
 
         entityManager.AddComponentData<BuildOrder>(orderEntity, newOrder);
-        //entityManager.GetComponentData<BuildOrder>(orderEntity).Value = BuildingClass.Kitchen;
     }
 }

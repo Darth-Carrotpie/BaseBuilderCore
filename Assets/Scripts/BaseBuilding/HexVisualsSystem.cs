@@ -7,7 +7,6 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine.InputSystem.LowLevel;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -37,17 +36,17 @@ public partial struct HexVisualsSystem : ISystem
 
         BeginSimulationEntityCommandBufferSystem.Singleton begSimEcb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(); //use BeginSimulationEntityCommandBufferSystem because otherwise it will render before applying position
         var ecb = begSimEcb.CreateCommandBuffer(state.WorldUnmanaged);
-        RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>(); //for some reason i need to get it every frame, otherwise null error
+        RefRW<BuildOrder> order = SystemAPI.GetSingletonRW<BuildOrder>();
 
 
-        foreach ((var prevState, var currState, var gridCell, Entity statChangeEntity) in SystemAPI.Query<GridCellVisualStatePrevious, GridCellVisualState, RefRW<GridCell>>().WithEntityAccess())
+        foreach ((var prevState, var currState, var gridCell, Entity stateChangeEntity) in SystemAPI.Query<GridCellVisualStatePrevious, GridCellVisualState, RefRW<GridCell>>().WithEntityAccess())
         {
             if (prevState.Value != currState.Value)
             {
                 Entity toBuild = StateByteToPrefab(currState.Value, order);
-                InstantiateVisuals(toBuild, ecb, statChangeEntity, gridCell);
+                InstantiateVisuals(toBuild, ecb, stateChangeEntity, gridCell);
 
-                string entName = entityManager.GetName(statChangeEntity);
+                string entName = entityManager.GetName(stateChangeEntity);
                 //UnityEngine.Debug.Log("RefRW+State!>> Changed: " + entName + ">>>  prevState:" + prevState.Value + " currState: " + currState.Value);
             }
         }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -26,24 +27,38 @@ public partial struct DestroyLinks : ISystem
 
         Entity orderEntity = SystemAPI.GetSingletonEntity<BuildOrder>();
         DynamicBuffer<DestroyOrderAtPosition> destroyOrderAtPos = SystemAPI.GetBuffer<DestroyOrderAtPosition>(orderEntity);
+        GridGeneratorConfig config = SystemAPI.GetSingleton<GridGeneratorConfig>();
+        for (int i = destroyOrderAtPos.Length - 1; i >= 0; i--) {
+            DestroyOrderAtPosition order = destroyOrderAtPos[i];
+            //skip this order if the links for it are already destroyed
+            if (order.forceLinkDestroyed == true) continue;
 
-        foreach ((ForceLink link, Entity linkEntity) in SystemAPI.Query<ForceLink>().WithEntityAccess())
-        {
-            foreach (var order in destroyOrderAtPos)
-            {
-                float3 linkPositionA = entityManager.GetComponentData<LocalToWorld>(link.nodeA).Position;
-                float3 linkPositionB = entityManager.GetComponentData<LocalToWorld>(link.nodeB).Position;
+            foreach ((ForceLink link, Entity linkEntity) in SystemAPI.Query<ForceLink>().WithEntityAccess()){
+                Entity hexA = GetNodeCell(link.nodeA);
+                Entity hexB = GetNodeCell(link.nodeB);
+
+                float3 linkPositionA = entityManager.GetComponentData<LocalTransform>(hexA).Position;
+                float3 linkPositionB = entityManager.GetComponentData<LocalTransform>(hexB).Position;
 
                 // Check if the order's position correlates with the link's positions
-                if (math.distance(linkPositionA, order.position) < 0.1f ||
-                    math.distance(linkPositionB, order.position) < 0.1f)
+                if (math.distance(linkPositionA, order.position) < config.hexRadius ||
+                    math.distance(linkPositionB, order.position) < config.hexRadius)
                 {
                     // Destroy the link if it correlates with the order
                     ecb.AddComponent(linkEntity, new MarkedForDestruction { }); //this will tag to destroy entity later
-                    //ecb.DestroyEntity(linkEntity);
-                    UnityEngine.Debug.Log("Destroyed link between: " + link.nodeA + " and " + link.nodeB);
+
+                    //change order state to reflect the destruction of force node
+                    var newDo = order;
+                    newDo.forceLinkDestroyed = true;
+                    destroyOrderAtPos[i] = newDo;
                 }
             }
         }
+    }
+
+    Entity GetNodeCell(Entity nodeEntity) {
+        DynamicBuffer<GridCellArea> dynBuffer = entityManager.GetBuffer<GridCellArea>(nodeEntity);
+        GridCellArea gca = dynBuffer.AsNativeArray().FirstOrDefault();
+        return gca.GridCellEntity;
     }
 }

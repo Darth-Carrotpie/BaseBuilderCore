@@ -17,20 +17,24 @@ public class DestroyOrderInput : MonoBehaviour
 
     public void DestroySelectedNodes()
     {
-        NativeArray<Entity> orderArray = entityManager.CreateEntityQuery(typeof(DestroyOrder)).ToEntityArray(Allocator.Temp);
-        if (orderArray.Length == 0) return;
-        Entity orderEntity = orderArray[0];
-        DestroyOrder buildOrdersAtPos = entityManager.GetComponentData<DestroyOrder>(orderEntity);
 
-        //query all selected Entities
+        Entity orderEntity = entityManager.CreateEntityQuery(typeof(DestroyOrder)).GetSingletonEntity();
+        DestroyOrder orderData = entityManager.GetComponentData<DestroyOrder>(orderEntity);
+        //check if order already exists
+        if (orderData.Value != false) return;
+
+        //check if nothing is selected
         NativeArray<Entity> entityArray = entityManager.CreateEntityQuery(typeof(LocalTransform), typeof(SelectedCellTag)).ToEntityArray(Allocator.TempJob);
         if (entityArray.Length == 0)
         {
             UnityEngine.Debug.Log("Nothing Selected! Nothing to destroy!");
             return;
         }
-        UnityEngine.Debug.Log("Destroy order tag set to Enabled!");
 
-        entityManager.SetComponentEnabled<DestroyOrder>(orderEntity, true);
+        DestroyOrder newOrder = new DestroyOrder {
+            Value = true,
+        };
+
+        entityManager.AddComponentData<DestroyOrder>(orderEntity, newOrder);
     }
 }

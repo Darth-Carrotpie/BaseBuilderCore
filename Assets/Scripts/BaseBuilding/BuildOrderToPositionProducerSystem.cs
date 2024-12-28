@@ -70,7 +70,7 @@ public partial struct BuildOrderToPositionProducerSystem : ISystem, ISystemStart
                 if (forceNode.buildingRepr == Entity.Null) continue;
 
                 //check their ref to current grid cell
-                //this uses grid map indexing, to increase map indexing speed by 10
+                //this uses grid map indexing, to increase map indexing speed by 10X
                 Entity gridCellEntity = Entity.Null;
                 GridCellArea gca = dynBuffer.AsNativeArray().FirstOrDefault();
                 gridCellEntity = gca.GridCellEntity;

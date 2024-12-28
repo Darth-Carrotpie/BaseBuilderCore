@@ -35,7 +35,7 @@ public partial struct AddForcePullSystem : ISystem
             if (!entityManager.HasComponent<PhysicsMass>(nodeAEntity) || !entityManager.HasComponent<PhysicsMass>(nodeBEntity))
             { 
                 Debug.Log("returning because no mass");
-                continue; // Skip entities without PhysicsMass components  
+                continue; // Skip entities without PhysicsMass components. Also skips ForceLink entities with missing nodes
             }
 
             PhysicsVelocity physicsVelA = entityManager.GetComponentData<PhysicsVelocity>(nodeAEntity);

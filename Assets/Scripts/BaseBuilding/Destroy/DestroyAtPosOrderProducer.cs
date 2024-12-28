@@ -1,3 +1,4 @@
+using BovineLabs.Core.States;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +11,25 @@ using UnityEngine;
 public partial struct DestroyAtPosOrderProducer : ISystem
 {
     EntityManager entityManager;
+    [BurstCompile]
+    public void OnStartRunning(ref SystemState state) {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //Get required references
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        NativeArray<Entity> orderArray = entityManager.CreateEntityQuery(typeof(DestroyOrder)).ToEntityArray(Allocator.Temp);
-        if (orderArray.Length == 0) return;
-        Entity orderEntity = orderArray[0];
-        UnityEngine.Debug.Log("Found a DestroyOrder!");
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        RefRW<DestroyOrder> order = SystemAPI.GetSingletonRW<DestroyOrder>();
+        Entity orderEntity = entityManager.CreateEntityQuery(typeof(DestroyOrder)).GetSingletonEntity();
 
         //Find out if particular order is enabled
-        if (!entityManager.IsComponentEnabled<DestroyOrder>(orderEntity)) return;
+        if (order.ValueRW.Value == false) return;
 
-        entityManager.SetComponentEnabled<DestroyOrder>(orderEntity, false);
+        order.ValueRW.Value = false;
 
-        //Get the buffer, where we will add OrderAtPosition components
+        //Get the buffer, where we will add DestroyOrderAtPosition components
         DynamicBuffer<DestroyOrderAtPosition> buildOrdersAtPos = entityManager.GetBuffer<DestroyOrderAtPosition>(orderEntity);
         UnityEngine.Debug.Log("DestroyOrder is enabled, add OrdersAtPos!");
 
@@ -43,6 +46,8 @@ public partial struct DestroyAtPosOrderProducer : ISystem
                 TTL = 25
             };
             buildOrdersAtPos.Add(newDOatPosition);
+            //deselect the cell
+            entityManager.SetComponentEnabled<SelectedCellTag>(gridCellEntity, false);
         }
     }
 }

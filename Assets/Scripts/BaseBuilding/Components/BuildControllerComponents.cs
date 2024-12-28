@@ -29,7 +29,9 @@ public struct BuildOrderAtPosition : IBufferElementData
     public Entity forceNodeProduced;
     public Entity forceLinkProduced;
 }
-public struct DestroyOrder : IComponentData, IEnableableComponent{}
+public struct DestroyOrder : IComponentData{
+    public bool Value;
+}
 
 public struct DestroyOrderAtPosition : IBufferElementData
 {
