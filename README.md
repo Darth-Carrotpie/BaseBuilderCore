@@ -10,9 +10,10 @@ Dependencies:
 
 
 # To Do - QoL:
-- Remove Editor Cools code and add as a package dep instead
+[x] Remove Editor Cools code and add as a package dep instead (removed, it is not available as a managed package)
 - Add CI/CD on push to release a package
 - Improve existing code extensibility
+- Add Tests
 
 #To Do - Features (Forces):
 - Add global centrific force, to center the graph naturally on zero

@@ -3,7 +3,25 @@
     "version": "0.1.0",
     "displayName": "Base Builder Core",
     "description": "Hex grid based network force-driven graph built with ECS.",
+    "keywords": [
+        "ECS",
+        "DOTS",
+        "Force",
+        "Graph",
+        "Hex",
+        "Force-Driven",
+        "Node",
+        "Network"
+    ],
     "unity": "2020.3",
+    "homepage": "https://brilliantn.com/",
+    "bugs": {
+        "url": "https://github.com/Darth-Carrotpie/BaseBuilderCore/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Darth-Carrotpie/BaseBuilderCore.git"
+    },
     "dependencies": {
         "com.unity.entities": "^1.2.1",
         "com.unity.entities.graphics": "^1.2.1",
@@ -17,5 +35,11 @@
                 "com.bovinelabs.core"
             ]
         }
-    ]
+    ],
+    "license": "MIT",
+    "author": {
+        "name": "Danielius Vargonas",
+        "email": "info@brilliantn.com",
+        "url": "https://brilliantn.com/"
+    }
 }
