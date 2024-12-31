@@ -4,7 +4,7 @@ using Unity.Transforms;
 
 namespace BaseBuilderCore {
     //[BurstCompile]
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateInGroup(typeof(ParentingSystemGroup))]
     public partial struct AutoParentForceLinkSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             //state.RequireForUpdate<BuildOrder>();

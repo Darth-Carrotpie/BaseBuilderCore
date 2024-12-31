@@ -11,7 +11,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace BaseBuilderCore {
     //[BurstCompile]
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateInGroup(typeof(ParentingSystemGroup))]
     public partial struct AutoParentForceNodeSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             //state.RequireForUpdate<BuildOrder>();

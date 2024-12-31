@@ -9,7 +9,9 @@ using Unity.Transforms;
 using UnityEngine;
 
 namespace BaseBuilderCore {
-    public partial struct DestroyAtPosOrderProducer : ISystem {
+    [UpdateInGroup(typeof(ProducerSystemsGroup))]
+    public partial struct DestroyAtPosOrderProducer : ISystem
+    {
         EntityManager entityManager;
         [BurstCompile]
         public void OnStartRunning(ref SystemState state) {

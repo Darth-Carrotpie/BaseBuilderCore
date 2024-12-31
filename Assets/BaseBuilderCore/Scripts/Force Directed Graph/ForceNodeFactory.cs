@@ -19,6 +19,7 @@ namespace BaseBuilderCore {
         Entity configEntity;
         public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<TestForceDirection>();
+            state.RequireForUpdate<ForceDirGraphConfig>();
         }
         public void OnStartRunning(ref SystemState state) {
         }
@@ -62,6 +63,8 @@ namespace BaseBuilderCore {
             foreach (var (physicsVelocity, node) in SystemAPI.Query<RefRW<PhysicsVelocity>, ForceNode>()) {
                 physicsVelocity.ValueRW.Linear = new float3(0, 0, 0);
             }
+            RefRW<ForceDirGraphConfig> graphConfig = SystemAPI.GetSingletonRW<ForceDirGraphConfig>();
+            graphConfig.ValueRW.temperature = graphConfig.ValueRW.initialTemperature;
         }
 
         /*public void CreateForceNode(Entity buildingEntity)

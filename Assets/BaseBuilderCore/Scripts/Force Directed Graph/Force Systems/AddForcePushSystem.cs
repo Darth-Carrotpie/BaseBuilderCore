@@ -1,11 +1,12 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
 namespace BaseBuilderCore {
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateInGroup(typeof(ForcesSystemGroup))]
     public partial struct AddForcePushSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             //state.RequireForUpdate<ForceDirGraphConfig>();
@@ -27,7 +28,6 @@ namespace BaseBuilderCore {
                     if (distance > 0 && distance < 10f) {
                         float force = graphConfig.repulsiveForce / math.sqrt(distance);
                         physicsVelocity.ValueRW.Linear -= direction * force;
-                        Debug.Log("Pushing by: "+ force);
                     }
                 }
             }

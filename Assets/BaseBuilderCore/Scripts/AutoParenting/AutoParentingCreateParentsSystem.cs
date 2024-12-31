@@ -12,6 +12,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace BaseBuilderCore {
     [BurstCompile]
+    [UpdateInGroup(typeof(ParentingSystemGroup))]
     public partial struct AutoParentingCreateParentsSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<BuildOrder>();

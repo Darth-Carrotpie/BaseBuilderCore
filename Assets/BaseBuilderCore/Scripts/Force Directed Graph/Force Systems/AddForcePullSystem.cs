@@ -4,13 +4,15 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BaseBuilderCore {
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-    public partial struct AddForcePullSystem : ISystem {
+    [UpdateInGroup(typeof(ForcesSystemGroup))]
+    public partial struct AddForcePullSystem : ISystem
+    {
         public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<ForceDirGraphConfig>();
         }
@@ -47,7 +49,6 @@ namespace BaseBuilderCore {
                     float force = graphConfig.springConstant * (distance);
                     physicsVelA.Linear += directionNorm * force;
                     physicsVelB.Linear -= directionNorm * force;
-                    Debug.Log("Pulling by: "+ force);
                 }
 
                 // Write back the modified PhysicsVelocity components into the ECS system

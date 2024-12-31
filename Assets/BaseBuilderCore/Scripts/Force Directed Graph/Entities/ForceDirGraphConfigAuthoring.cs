@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace BaseBuilderCore {
     public class ForceDirGraphConfigAuthoring : MonoBehaviour {
-        public float repulsiveForce = 1000f;
-        public float springConstant = 0.1f;
+        public float repulsiveForce = 2f;
+        public float springConstant = 0.5f;
         public float coolingFactor = 0.9f;
-        public float initialTemperature = 10f;
-        public float temperature = 10f;
+        public float initialTemperature = 1f;
+        public float temperature = 1f;
         public GameObject linkEntityPrefab;
         public GameObject nodeEntityPrefab;
 

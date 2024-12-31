@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   repulsiveForce: 2
   springConstant: 0.5
-  coolingFactor: 0.99
+  coolingFactor: 0.98
   initialTemperature: 1
   temperature: 1
   linkEntityPrefab: {fileID: 4114545562215108539, guid: 8eb678b0db0840b4aaae1dec1b58d3a9,

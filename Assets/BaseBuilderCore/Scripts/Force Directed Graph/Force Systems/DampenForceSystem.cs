@@ -4,11 +4,12 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
 namespace BaseBuilderCore {
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    [UpdateInGroup(typeof(ForcesSystemGroup))]
     public partial struct DampenForceSystem : ISystem {
         public void OnCreate(ref SystemState state) {
             state.RequireForUpdate<ForceDirGraphConfig>();
@@ -22,10 +23,10 @@ namespace BaseBuilderCore {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             foreach (var (nodeLocalToWorld, physicsMass, physicsVelocity, node, nodeEntity) in SystemAPI.Query<LocalToWorld, RefRO<PhysicsMass>, RefRW<PhysicsVelocity>, ForceNode>().WithEntityAccess()) {
-                physicsVelocity.ValueRW.Linear = physicsVelocity.ValueRW.Linear * graphConfig.ValueRW.temperature;
+                physicsVelocity.ValueRW.Linear *= graphConfig.ValueRW.temperature;
                 entityManager.SetComponentData(nodeEntity, physicsVelocity.ValueRW);
             }
-            if (graphConfig.ValueRW.temperature > 0.000001f)
+            if (graphConfig.ValueRW.temperature > 0.0001f)
                 graphConfig.ValueRW.temperature *= graphConfig.ValueRW.coolingFactor;
             else
                 graphConfig.ValueRW.temperature = 0;
