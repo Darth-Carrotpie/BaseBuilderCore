@@ -11,9 +11,8 @@ using Unity.Physics;
 using Unity.Transforms;
 
 namespace BaseBuilderCore {
-
     [BurstCompile]
-    public partial struct ForceNodeCreateSystem : ISystem {
+    public partial struct ForceNodeFactory : ISystem {
         EntityManager entityManager;
         RefRW<TestForceDirection> testConfig;
         //EntityCommandBuffer ecb;

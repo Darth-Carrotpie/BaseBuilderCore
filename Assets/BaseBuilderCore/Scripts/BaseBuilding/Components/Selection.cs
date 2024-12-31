@@ -8,4 +8,6 @@ namespace BaseBuilderCore {
     public struct SelectorStateData : IComponentData {
         public Entity SelectionUI;
     }
+
+    public struct CellSelector : IComponentData { }
 }

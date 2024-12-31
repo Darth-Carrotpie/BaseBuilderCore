@@ -11,7 +11,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.Rendering.DebugUI;
 namespace BaseBuilderCore {
 
-    [UpdateBefore(typeof(BuildOrderToPositionConsumerSystem))]
+    [UpdateBefore(typeof(ConsumerSystemsGroup))]
     [UpdateBefore(typeof(GridCellStateSetterTest))]
     [UpdateBefore(typeof(GridCellStateSetter))]
     //[BurstCompile]

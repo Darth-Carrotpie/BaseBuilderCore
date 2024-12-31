@@ -8,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 namespace BaseBuilderCore {
-    public partial struct ForceNodeBufferGridCellSystem : ISystem {
+    public partial struct GridCellAreaUpdater : ISystem {
         private PositionBuilder positionBuilderCells;
         private SpatialMap<SpatialPosition> spatialMap;
         EntityQuery gridCellQuery;

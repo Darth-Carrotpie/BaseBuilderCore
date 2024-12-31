@@ -1,15 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace BaseBuilderCore {
-    public class TestForceDirectionInput : MonoBehaviour {
-        void Start() {
-        }
-
+    public class TestForceDirectedBuildingInput : MonoBehaviour {
         [EditorCools.Button]
         public void GenerateSpawnAmountForceNodes() {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager; //have to get EntityManager every time we need to ref it.

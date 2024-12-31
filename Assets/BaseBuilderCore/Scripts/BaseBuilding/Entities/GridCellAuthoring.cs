@@ -16,16 +16,6 @@ namespace BaseBuilderCore {
                 SetComponentEnabled<SelectableCellTag>(entity, true);
                 AddComponent(entity, new SelectedCellTag());
                 SetComponentEnabled<SelectedCellTag>(entity, false);
-                /*AddComponent(entity, new IsClearTag());
-                SetComponentEnabled<IsClearTag>(entity, true);
-                AddComponent(entity, new IsWorkshopTag());
-                SetComponentEnabled<IsWorkshopTag>(entity, false);
-                AddComponent(entity, new IsKitchenTag());
-                SetComponentEnabled<IsKitchenTag>(entity, false);
-                AddComponent(entity, new IsBarracksTag());
-                SetComponentEnabled<IsBarracksTag>(entity, false);
-                AddComponent(entity, new IsArenaTag());
-                SetComponentEnabled<IsArenaTag>(entity, false);*/
                 AddBuffer<GridCellArea>(entity);
 
                 //int clearState = 254;
