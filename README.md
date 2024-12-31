@@ -5,8 +5,8 @@ Requirements to run:
 
 Dependencies:
 - [BovineLabs.Core](https://github.com/tertle/com.bovinelabs.core) (core)
-- [EditorCools](https://github.com/datsfain/EditorCools/tree/main) (optional)
 - TextMesh Pro (optional)
+- [EditorCools](https://github.com/datsfain/EditorCools/tree/main) (optional)
 
 
 # To Do - QoL:

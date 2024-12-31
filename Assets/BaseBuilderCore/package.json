@@ -1,0 +1,21 @@
+{
+    "name": "com.brilliantn.basebuildercore",
+    "version": "0.1.0",
+    "displayName": "Base Builder Core",
+    "description": "Hex grid based network force-driven graph built with ECS.",
+    "unity": "2020.3",
+    "dependencies": {
+        "com.unity.entities": "^1.2.1",
+        "com.unity.entities.graphics": "^1.2.1",
+        "com.unity.textmeshpro": "^3.0.9"
+    },
+    "scopedRegistries": [
+        {
+            "name": "package.openupm.com",
+            "url": "https://package.openupm.com/",
+            "scopes": [
+                "com.bovinelabs.core"
+            ]
+        }
+    ]
+}
