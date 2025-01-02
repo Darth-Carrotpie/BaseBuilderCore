@@ -13,7 +13,7 @@
         "Node",
         "Network"
     ],
-    "unity": ">=2020.3",
+    "unity": "2020.3",
     "homepage": "https://brilliantn.com/",
     "bugs": {
         "url": "https://github.com/Darth-Carrotpie/BaseBuilderCore/issues"
@@ -23,9 +23,9 @@
         "url": "https://github.com/Darth-Carrotpie/BaseBuilderCore.git"
     },
     "dependencies": {
-        "com.unity.entities": ">=1.2.1",
-        "com.unity.entities.graphics": ">=1.2.1",
-        "com.unity.textmeshpro": ">=3.0.9"
+        "com.unity.entities": "1.2.1",
+        "com.unity.entities.graphics": "1.2.1",
+        "com.unity.textmeshpro": "3.0.9"
     },
     "scopedRegistries": [
         {

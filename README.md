@@ -3,6 +3,17 @@ Requirements to run:
 - Tick "Entities" subscene when first starting "BuildSample-ForceDirected"
 - Install deps.
 
+Installation instructions (Unity 6):
+	- Open Unity Package Manager
+	- Add a scoped registry, first open package manager settings:
+	![1](./Instructions/1.png)
+	- Add scoped registry data:
+	![2](./Instructions/2.png)
+	- Go back go Unity Package Manager and select "My Registries" in the side tab strip
+	- Select the package and click install. You can chose a particular version if needed.
+	![3](./Instructions/3.png)
+	- Thats it! Enjoy the package. Contributions are welcome.
+
 Dependencies:
 - [BovineLabs.Core](https://github.com/tertle/com.bovinelabs.core) (core)
 - TextMesh Pro (optional)
