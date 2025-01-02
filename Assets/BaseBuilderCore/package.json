@@ -1,6 +1,6 @@
 {
     "name": "com.brilliantn.basebuildercore",
-    "version": "0.1.1",
+    "version": "0.1.4",
     "displayName": "Base Builder Core",
     "description": "Hex grid based network force-driven graph built with ECS.",
     "keywords": [
