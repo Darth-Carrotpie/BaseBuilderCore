@@ -41,5 +41,11 @@
         "name": "Danielius Vargonas",
         "email": "info@brilliantn.com",
         "url": "https://brilliantn.com/"
-    }
+    },
+    "samples": [
+    {
+        "displayName": "BuildSample",
+        "description": "Contains sample scene setup to build the node network.",
+        "path": "Samples~/BuildSample"
+    },
 }
